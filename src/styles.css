@@ -1,3 +1,41 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'tailwindcss';
+
+:root {
+    --primary-color: rgb(204, 204, 214);
+    --secondary-color: #969899;
+    --background-color: #F9FAFB;
+    --text-color: #111827;
+    --card-color: #6591f0;
+}
+
+.dark {
+    --primary-color: #130f1b;
+    --secondary-color: #3c3c3f;
+    --background-color: #1F2937;
+    --text-color: #F9FAFB;
+    --card-color: #1F2937;
+}
+
+
+@layer utilities {
+    .bg-primary-color { background-color: var(--primary-color); }
+    .bg-secondary-color { background-color: var(--secondary-color); }
+    .bg-background-color { background-color: var(--background-color); }
+    .bg-card-color { background-color: var(--card-color); }
+
+    .text-primary-color { color: var(--primary-color); }
+    .text-secondary-color { color: var(--secondary-color); }
+    .text-text-color { color: var(--text-color); }
+
+    .border-primary-color { border-color: var(--primary-color); }
+    .border-secondary-color { border-color: var(--secondary-color); }
+    .border-text-color { border-color: var(--text-color); }
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color 200ms ease, color 200ms ease;
+}
