@@ -6,11 +6,9 @@ import { HeaderComponent } from "../../shared/header.component";
     imports: [HeaderComponent],
     template: `
         <app-header></app-header>
-
-        <div class="p-4">
-            <h1 class="text-2xl font-bold">Dashboard</h1>
-            <p>Welcome to the dashboard!</p>
+        <div>
+            <p>Friends Page</p>
         </div>
     `
 })
-export class DashboardPage {}
+export class FriendPage {}

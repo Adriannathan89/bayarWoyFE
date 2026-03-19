@@ -3,19 +3,23 @@
 @import 'tailwindcss';
 
 :root {
-    --primary-color: rgb(204, 204, 214);
+    --primary-color: rgb(233, 233, 238);
     --secondary-color: #969899;
     --background-color: #F9FAFB;
     --text-color: #111827;
-    --card-color: #6591f0;
+    --text-card-color: #e7e5e5;
+    --card-color: #437dc0;
+    --neutral-color: #437dc0;
 }
 
 .dark {
-    --primary-color: #130f1b;
-    --secondary-color: #3c3c3f;
-    --background-color: #1F2937;
+    --primary-color: #2e2e35;
+    --secondary-color: #4b4b58;
+    --background-color: #3a3d41;
     --text-color: #F9FAFB;
-    --card-color: #1F2937;
+    --text-card-color: #e7e5e5;
+    --card-color: #2e3a55;
+    --neutral-color: #2e3a55;
 }
 
 
@@ -28,7 +32,9 @@
     .text-primary-color { color: var(--primary-color); }
     .text-secondary-color { color: var(--secondary-color); }
     .text-text-color { color: var(--text-color); }
-
+    .text-card-color { color: var(--text-card-color); }
+    .text-neutral-color { color: var(--neutral-color); }
+    
     .border-primary-color { border-color: var(--primary-color); }
     .border-secondary-color { border-color: var(--secondary-color); }
     .border-text-color { border-color: var(--text-color); }

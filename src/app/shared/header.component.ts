@@ -1,29 +1,31 @@
 import { Component } from "@angular/core";
 import { SwithTheme } from "../core/service/styles/switch-theme.service";
 import { Router } from "@angular/router";
+import { NavbarComponent } from "./navbar.component";
 
 @Component({
     selector: 'app-header',
     standalone: true,
+    imports: [NavbarComponent],
     template: `
         <div class="w-full h-20 bg-primary-color text-text-color flex items-center justify-between p-4 shadow-b-md border-b border-secondary-color">
-            <div class="text-2xl flex font-bold ml-6">
+            <div class="max-sm:text-sm xl:text-2xl max-sm:mt-[4px] flex font-bold ml-6">
                 <p>BayarWoy</p>
             </div>
-            <div class="flex gap-[32px] mr-6">
+            <div class="flex max-xl:gap-[20px] gap-[32px] mr-6">
                 <button
                 type="button"
                 (click)="toggleTheme()"
                 role="switch"
                 [attr.aria-checked]="isDark"
                 [attr.aria-label]="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
-                class="relative inline-flex h-8 w-16 items-center rounded-full border border-text-color bg-secondary-color px-1 transition-colors duration-300 cursor-pointer
+                class="relative inline-flex w-16 items-center rounded-full border border-text-color bg-secondary-color px-1 transition-colors duration-300 cursor-pointer
                 mt-[5px]"
                 >
 
                 <span
-                    class="h-6 w-6 rounded-full bg-primary-color shadow-md transition-transform duration-300 flex items-center justify-center"
-                    [style.transform]="isDark ? 'translateX(2rem)' : 'translateX(0)'">
+                    class="w-full h-full max-h-6 max-w-6 rounded-full bg-primary-color shadow-md transition-transform duration-300 flex items-center justify-center"
+                    [style.transform]="isDark ? 'translateX(30px)' : 'translateX(0)'">
                     <svg
                         [class.hidden]="isDark"
                         class="h-3.5 w-3.5 text-secondary-color"
@@ -56,11 +58,12 @@ import { Router } from "@angular/router";
                     </svg>
                 </span>
                 </button>
-                <div>
+                <div class="flex max-xl:gap-[20px] gap-[32px]">
                     @if(isLogin) {
-                         <p class="text-sm">username</p>
+                        <app-navbar></app-navbar>
+                        <p class="max-sm:text-sm max-sm:mt-[8px] md:text-md md:mt-[8px] xl:text-xl mt-[4px]">{{ username }}</p>
                     } @else {
-                        <button class="p-2 w-[80px] h-[40px] rounded-3xl bg-card-color cursor-pointer" (click)="login()">Login</button>
+                        <button class="py-2 px-3 w-full max-w-[100px] h-[40px] shadow-md rounded-3xl bg-card-color cursor-pointer text-card-color" (click)="login()">Login</button>
                     }
                 </div>
             </div>
@@ -77,6 +80,10 @@ export class HeaderComponent {
 
     get isLogin(): boolean {
         return localStorage.getItem('username') !== null;
+    }
+
+    get username(): string {
+        return localStorage.getItem('username') || '';
     }
 
     toggleTheme(): void {

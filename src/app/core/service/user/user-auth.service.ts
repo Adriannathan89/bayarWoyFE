@@ -1,15 +1,18 @@
 import { Injectable } from "@angular/core";
+import { viteEnv } from "../../../../environments/environment.generated";
+
 
 @Injectable({providedIn: 'root'})
 export class UserAuthService {
-    private connectionURL = import.meta.env.VITE_LOGIN_ENDPOINT
-
     async login(username: string, password: string) {
         const body = {
             username: username,
             password: password
         }
-        const res = await fetch(this.connectionURL, {
+
+        const connectionURL = viteEnv.VITE_LOGIN_ENDPOINT;
+
+        const res = await fetch(connectionURL, {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -26,7 +29,9 @@ export class UserAuthService {
     }
 
     async logout() {
-        const res = await fetch(import.meta.env.VITE_LOGOUT_ENDPOINT, {
+        const connectionURL = viteEnv.VITE_LOGOUT_ENDPOINT;
+
+        const res = await fetch(connectionURL, {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -36,7 +41,9 @@ export class UserAuthService {
     }
 
     async refreshToken() {
-        const res = await fetch(import.meta.env.VITE_REFRESH_ENDPOINT, {
+        const connectionURL = viteEnv.VITE_REFRESH_ENDPOINT;
+
+        const res = await fetch(connectionURL, {
             method: 'POST',
             credentials: 'include',
             headers: {

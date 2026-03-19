@@ -1,13 +1,19 @@
 import { Injectable } from "@angular/core";
+import { viteEnv } from "../../../../environments/environment.generated";
+
+export type RegisterRequest = {
+    username: string;
+    password: string;
+};
 
 @Injectable({
     providedIn: 'root'
 })
 export class UserRegisterService {
-    private connectionURL = import.meta.env.VITE_REGISTER_ENDPOINT
+    private connectionURL = viteEnv.VITE_REGISTER_ENDPOINT;
 
     async register(username: string, password: string) {
-        const body = {
+        const body: RegisterRequest = {
             username: username,
             password: password
         }
