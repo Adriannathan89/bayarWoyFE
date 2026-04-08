@@ -50,5 +50,21 @@ export class UserAuthService {
                 'Content-Type': 'application/json'
             }
         })
+
+        return res.ok;
+    }
+
+    async isAuthenticated() {
+        const connectionURL = viteEnv.VITE_VALIDATE_SESSION_ENDPOINT;
+
+        const res = await fetch(connectionURL, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        return res.ok;
     }
 }

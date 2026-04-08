@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/guard/auth.guard';
 
 export const routes: Routes = [
     {
@@ -7,14 +8,17 @@ export const routes: Routes = [
     },
     {
         path: "dashboard",
+        canActivate: [authGuard],
         loadComponent: () => import('./feature/dashboard/dashboard.page').then(m => m.DashboardPage)
     },
     {
         path: "friends",
+        canActivate: [authGuard],
         loadComponent: () => import('./feature/friends/friend.page').then(m => m.FriendPage)
     },
     {
         path: "transaction",
+        canActivate: [authGuard],
         loadComponent: () => import('./feature/transaction/transaction.page').then(m => m.TransactionPage)
     },
     {

@@ -37,7 +37,7 @@ import { Router } from "@angular/router";
 
         <button class="sm:hidden mt-[4px] text-2xl cursor-pointer" (click)="toggleMenu()">☰</button>
         @if(menuOpen) {
-            <div class="absolute top-16 right-20 bg-card-color rounded-lg shadow-md p-4 flex flex-col gap-[16px] sm:hidden">
+            <div class="absolute z-10 top-16 right-20 bg-card-color rounded-lg shadow-md p-4 flex flex-col gap-[16px] sm:hidden">
                 <button class="p-2 w-full text-left bg-card-color rounded-lg cursor-pointer" (click)="routerNavigate('/dashboard')">Dashboard</button>
                 <button class="p-2 w-full text-left bg-card-color rounded-lg cursor-pointer" (click)="routerNavigate('/friends')">Friends</button>
                 <button class="p-2 w-full text-left bg-card-color rounded-lg cursor-pointer" (click)="routerNavigate('/transaction')">Transaction</button>

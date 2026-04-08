@@ -1,13 +1,14 @@
 import { Component } from "@angular/core";
 import { HeaderComponent } from "../../shared/header.component";
+import { SearchFriendComponent } from "../../shared/search-friend.component";
 
 @Component({
     standalone: true,
-    imports: [HeaderComponent],
+    imports: [HeaderComponent, SearchFriendComponent],
     template: `
         <app-header></app-header>
-        <div>
-            <p>Friends Page</p>
+        <div class="flex flex-col mt-[40px]">
+            <app-search-friend></app-search-friend>
         </div>
     `
 })

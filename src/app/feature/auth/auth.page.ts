@@ -104,7 +104,6 @@ export class AuthPage {
         if (this.authForm.invalid) {
             return;
         }
-        console.log(this.isLogin)
 
         const { username, password } = this.authForm.value;
 
