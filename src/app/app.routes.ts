@@ -7,6 +7,10 @@ export const routes: Routes = [
         loadComponent: () => import('./feature/auth/auth.page').then(m => m.AuthPage)
     },
     {
+        "path": "",
+        "loadComponent": () => import("./feature/home/home.page").then(m => m.HomePage)
+    },
+    {
         path: "dashboard",
         canActivate: [authGuard],
         loadComponent: () => import('./feature/dashboard/dashboard.page').then(m => m.DashboardPage)
@@ -22,7 +26,8 @@ export const routes: Routes = [
         loadComponent: () => import('./feature/transaction/transaction.page').then(m => m.TransactionPage)
     },
     {
-        "path": "",
-        "loadComponent": () => import("./feature/home/home.page").then(m => m.HomePage)
+        path: "transaction/add",
+        canActivate: [authGuard],
+        loadComponent: () => import('./feature/transaction/addTransaction.page').then(m => m.AddTransactionPage)
     }
 ];

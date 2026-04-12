@@ -5,7 +5,7 @@ import { Router } from "@angular/router";
 @Component({
     selector: 'app-navbar',
     template: `
-        <div class="hidden sm:flex sm:gap-[32px] mt-[4px] font-semibold text-card-color">
+        <div class="hidden md:flex md:gap-[32px] mt-[4px] font-semibold text-card-color">
             <div>
                 <button class="p-2 w-[16px] 
                 w-full
@@ -35,9 +35,9 @@ import { Router } from "@angular/router";
             </div>
         </div>
 
-        <button class="sm:hidden mt-[4px] text-2xl cursor-pointer" (click)="toggleMenu()">☰</button>
+        <button class="md:hidden mt-[4px] text-2xl cursor-pointer" (click)="toggleMenu()">☰</button>
         @if(menuOpen) {
-            <div class="absolute z-10 top-16 right-20 bg-card-color rounded-lg shadow-md p-4 flex flex-col gap-[16px] sm:hidden">
+            <div class="absolute z-10 top-18 right-10 bg-card-color rounded-lg shadow-md p-4 flex flex-col gap-[16px] md:hidden">
                 <button class="p-2 w-full text-left bg-card-color rounded-lg cursor-pointer" (click)="routerNavigate('/dashboard')">Dashboard</button>
                 <button class="p-2 w-full text-left bg-card-color rounded-lg cursor-pointer" (click)="routerNavigate('/friends')">Friends</button>
                 <button class="p-2 w-full text-left bg-card-color rounded-lg cursor-pointer" (click)="routerNavigate('/transaction')">Transaction</button>

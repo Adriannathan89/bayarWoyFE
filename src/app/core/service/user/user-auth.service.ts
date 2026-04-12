@@ -22,7 +22,7 @@ export class UserAuthService {
         })
         
         if(!res.ok) {
-            return false;
+            throw new Error('Login failed');
         }
 
         return true;

@@ -3,6 +3,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { UserAuthService } from "../../core/service/user/user-auth.service";
 import { UserRegisterService } from "../../core/service/user/user-register.service";
 import { Router } from "@angular/router";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { ChangeDetectorRef } from "@angular/core";
 
 @Component({
     standalone: true,
@@ -10,11 +12,11 @@ import { Router } from "@angular/router";
     template: `
         <div class="flex items-center justify-center w-full h-screen">
             <div class="max-sm:w-[480px] max-md:w-[340px] max-xl:w-[420px] xl:w-[480px] h-[600px] bg-primary-color rounded-tl-2xl rounded-bl-2xl p-8 shadow-md">
-                <div class="w-full flex justify-center {{ isLogin ? 'mt-[100px]' : '' }}">
+                <div class="w-full flex justify-center pt-4">
                     <h1 class="text-3xl font-bold mb-4">@if (isLogin) { Login } @else { Register }</h1>
                 </div>
                 <form [formGroup]="authForm" (ngSubmit)="handleSubmit()" 
-                class="flex flex-col gap-6"
+                class="flex flex-col gap-6 justify-center h-[460px]"
                 >
                     <div class="flex flex-col gap-[8px]">
                         <p>Username:</p>
@@ -84,7 +86,14 @@ export class AuthPage {
     isSubmitting = false;
     authForm;
 
-    constructor(private fb: FormBuilder, private registerService: UserRegisterService, private authService: UserAuthService, private router: Router) {
+    constructor(
+        private fb: FormBuilder, 
+        private registerService: UserRegisterService, 
+        private authService: UserAuthService, 
+        private router: Router,
+        private snackBar: MatSnackBar,
+        private cdr: ChangeDetectorRef
+    ){
         this.authForm = this.fb.nonNullable.group({
             username: ['', [Validators.required, Validators.minLength(3)]],
             password: ['', [Validators.required, Validators.minLength(6)]],
@@ -108,16 +117,22 @@ export class AuthPage {
         const { username, password } = this.authForm.value;
 
         if (this.isLogin) {
-            this.isSubmitting = true;
             try {
+                this.isSubmitting = true;
                 const success = await this.authService.login(String(username), String(password));
 
                 if (success) {
                     localStorage.setItem('username', String(username));
                     this.router.navigate(['/dashboard']);
                 }
+            } catch (error) {
+                console.error('Login error:', error);
+                this.snackBar.open('Login failed. Please check your credentials and try again.', 'Close', {
+                    duration: 3000,
+                });
             } finally {
                 this.isSubmitting = false;
+                this.cdr.detectChanges();
             }
 
         } else {
@@ -128,6 +143,10 @@ export class AuthPage {
                     this.isLogin = true;
                     this.authForm.reset();
                 }
+            } catch (error) {
+                this.snackBar.open('Registration failed. Please try again.', 'Close', {
+                    duration: 3000,
+                });
             } finally {
                 this.isSubmitting = false;
             }
