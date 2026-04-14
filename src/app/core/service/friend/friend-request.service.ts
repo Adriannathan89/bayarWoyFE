@@ -11,7 +11,7 @@ export type FriendRequest = {
 @Injectable({
     providedIn: 'root'
 })
-export class FriendService {
+export class FriendRequestService {
     async getFriendsRequest() {
         const connectionURL = viteEnv.VITE_GET_FRIENDS_REQUEST_ENDPOINT;
 
@@ -38,10 +38,10 @@ export class FriendService {
     }
 
 
-    async sendFriendRequest(friendUsername: string) {
+    async sendFriendRequest(friendId: string) {
         const connectionURL = viteEnv.VITE_SEND_FRIEND_REQUEST_ENDPOINT;
         const body = {
-            friendUsername: friendUsername
+            friendId: friendId
         }
 
         const res = await fetch(connectionURL, {

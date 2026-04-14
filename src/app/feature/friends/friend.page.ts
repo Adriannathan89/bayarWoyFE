@@ -1,6 +1,6 @@
 import { Component } from "@angular/core";
 import { HeaderComponent } from "../../shared/header.component";
-import { SearchFriendComponent } from "../../shared/search-friend.component";
+import { SearchFriendComponent } from "./component/search-friend.component";
 
 @Component({
     standalone: true,

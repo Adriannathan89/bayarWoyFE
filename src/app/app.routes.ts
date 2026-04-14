@@ -23,11 +23,9 @@ export const routes: Routes = [
     {
         path: "transaction",
         canActivate: [authGuard],
-        loadComponent: () => import('./feature/transaction/transaction.page').then(m => m.TransactionPage)
+        children: [
+            { path: "", loadComponent: () => import('./feature/transaction/transaction.page').then(m => m.TransactionPage) },   
+            { path: "add", loadComponent: () => import('./feature/transaction/addTransaction.page').then(m => m.AddTransactionPage) }
+        ]
     },
-    {
-        path: "transaction/add",
-        canActivate: [authGuard],
-        loadComponent: () => import('./feature/transaction/addTransaction.page').then(m => m.AddTransactionPage)
-    }
 ];

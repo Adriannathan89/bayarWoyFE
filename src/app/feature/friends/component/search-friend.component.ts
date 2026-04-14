@@ -1,7 +1,9 @@
 import { Component, ChangeDetectorRef } from "@angular/core";
-import { Friend, FriendService } from "../core/service/friend/friend.service";
+import { Friend, FriendService } from "../../../core/service/friend/friend.service";
+import { FriendRequestService } from "../../../core/service/friend/friend-request.service";
 import { CommonModule } from "@angular/common";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
     selector: 'app-search-friend',
@@ -51,7 +53,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
                             <div class="flex justify-between p-4 bg-primary-color rounded-lg mb-2">
                                 <p class="flex items-center text-text-color font-medium">{{ friend.username }}</p>
                                 @if(friend.status === 'not_friend') {
-                                    <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                                    <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 cursor-pointer" 
+                                    (click)="addFriend(friend.id)">
                                         Add Friend
                                     </button>
                                 }
@@ -71,7 +74,11 @@ export class SearchFriendComponent {
     hasSearched = false;
     queryForm;
 
-    constructor(private friendService: FriendService, private fb: FormBuilder, private cdr: ChangeDetectorRef) { 
+    constructor(private friendService: FriendService, 
+        private friendRequestService: FriendRequestService, 
+        private fb: FormBuilder, 
+        private cdr: ChangeDetectorRef,
+        private snackBar: MatSnackBar) {
         this.queryForm = this.fb.nonNullable.group({
             query: ['', [Validators.required]]
         });
@@ -100,5 +107,28 @@ export class SearchFriendComponent {
                 this.hasSearched = true;
                 this.cdr.markForCheck();
             });
+    }
+
+    addFriend(friendId: string) {
+        this.friendRequestService.sendFriendRequest(friendId)
+            .then(() => {
+                this.friendResponse = this.friendResponse.map(friend => {
+                    if (friend.id === friendId) {
+                        return { ...friend, status: 'pending' };
+                    }
+                    return friend;
+                });
+                this.cdr.detectChanges();
+                this.snackBar.open('Friend request sent successfully.', 'Close', {
+                    duration: 3000
+                });
+            })
+            .catch((err: any) => {
+                this.error = err.message;
+                this.snackBar.open('Failed to send friend request.', 'Close', {
+                    duration: 3000
+                });
+            });
+
     }
 }
