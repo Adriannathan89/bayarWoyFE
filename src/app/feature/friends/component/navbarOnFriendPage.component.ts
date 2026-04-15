@@ -5,11 +5,16 @@ import { Router } from "@angular/router";
     selector: "app-navbar-on-friend-page",
     standalone: true,
     template: `
-        <nav class="w-full h-16 bg-white shadow-md flex items-center justify-center">
-            <button class="text-lg font-semibold text-gray-700 hover:text-gray-900" (click)="navigateToAddFriend()">
+        <nav class="w-full h-auto bg-transparent flex flex-col gap-12">
+            <button 
+            class="w-full text-lg font-semibold text-text-color hover:text-text-color/75 transition-colors duration-200 cursor-pointer flex items-center justify-center" 
+            (click)="navigateToAddFriend()">
                 Add Friend
             </button>
-            <button class="text-lg font-semibold text-gray-700 hover:text-gray-900 ml-8" (click)="navigateToFriendList()">
+
+            <button 
+            class="w-full text-lg font-semibold text-text-color hover:text-text-color/75 transition-colors duration-200 cursor-pointer flex items-center justify-center" 
+            (click)="navigateToFriendList()">
                 Friend List
             </button>
         </nav>

@@ -58,23 +58,23 @@ import { ChangeDetectorRef } from "@angular/core";
 
                     <button
                         type="submit"
-                        class="cursor-pointer rounded-xl bg-secondary-color px-4 py-2 font-semibold text-primary-color disabled:opacity-60 disabled:cursor-not-allowed
-                        {{ !canSubmit ? 'bg-secondary-color' : 'bg-card-color' }}"
+                        class="cursor-pointer rounded-xl px-4 py-2 font-semibold text-text-card-color disabled:opacity-60 disabled:cursor-not-allowed
+                        {{ !canSubmit ? 'bg-secondary-color' : 'bg-button-color' }}"
                         [disabled]="isSubmitting || !canSubmit"
                     >
                         {{ (isLogin ? 'Login' : 'Register') }}
                     </button>
                 </form>
             </div>
-            <div class="max-sm:hidden max-md:w-[340px] max-xl:w-[420px] xl:w-[480px] h-[600px] bg-card-color rounded-tr-2xl rounded-br-2xl p-8 shadow-md flex flex-col items-center justify-center gap-[16px] text-card-color">
+            <div class="max-sm:hidden max-md:w-[340px] max-xl:w-[420px] xl:w-[480px] h-[600px] bg-card-color rounded-tr-2xl rounded-br-2xl p-8 shadow-md flex flex-col items-center justify-center gap-[16px] text-text-card-color">
                 <p>Welcome to Bayar Woy Coek</p>
                 <div class="w-full flex flex-col items-center gap-[12px]">
                 @if (isLogin) {
                     <p>Don't have an account?</p>
-                    <button type="button" class="cursor-pointer bg-transparent w-[160px] py-1 px-3 border-1 border-card-color rounded-full text-card-color hover:bg-transparent/90" (click)="toggleLogin()">Register here</button>
+                    <button type="button" class="cursor-pointer bg-transparent w-[160px] py-1 px-3 border-1 rounded-full text-text-card-color hover:bg-transparent/90" (click)="toggleLogin()">Register here</button>
                 } @else {
                     <p>Already have an account?</p>
-                    <button type="button" class="cursor-pointer bg-transparent w-[160px] py-1 px-3 border-1 border-card-color rounded-full text-card-color hover:bg-transparent/90" (click)="toggleLogin()">Login here</button>
+                    <button type="button" class="cursor-pointer bg-transparent w-[160px] py-1 px-3 border-1 rounded-full text-text-card-color hover:bg-transparent/90" (click)="toggleLogin()">Login here</button>
                 }
                 </div>
             </div>

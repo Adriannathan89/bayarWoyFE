@@ -5,7 +5,7 @@ import { Router } from "@angular/router";
 @Component({
     selector: 'app-navbar',
     template: `
-        <div class="hidden md:flex md:gap-[32px] mt-[4px] font-semibold text-card-color">
+        <div class="hidden md:flex md:gap-[32px] mt-[4px] font-semibold text-text-card-color">
             <div>
                 <button class="p-2 w-[16px] 
                 w-full

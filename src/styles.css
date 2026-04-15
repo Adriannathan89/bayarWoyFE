@@ -1,43 +1,42 @@
-/* You can add global styles to this file, and also import other style files */
-
 @import 'tailwindcss';
+
+@theme {
+    --color-primary-color: var(--primary-color);
+    --color-secondary-color: var(--secondary-color);
+    --color-background-color: var(--background-color);
+    --color-hover-color: var(--hover-color);
+    --color-text-color: var(--text-color);
+    --color-text-card-color: var(--text-card-color);
+    --color-card-color: var(--card-color);
+    --color-neutral-color: var(--neutral-color);
+    --color-card-border-color: var(--card-border-color);
+    --color-button-color: var(--button-color);
+}
 
 :root {
     --primary-color: rgb(233, 233, 238);
     --secondary-color: #969899;
     --background-color: #F9FAFB;
+    --hover-color: #686363;
     --text-color: #111827;
     --text-card-color: #e7e5e5;
     --card-color: #437dc0;
     --neutral-color: #437dc0;
+    --card-border-color: #1f356d;
+    --button-color: #2a4177;
 }
 
 .dark {
     --primary-color: #2e2e35;
     --secondary-color: #4b4b58;
     --background-color: #3a3d41;
+    --hover-color: #bbbcbd;
     --text-color: #F9FAFB;
     --text-card-color: #e7e5e5;
     --card-color: #2e3a55;
     --neutral-color: #2e3a55;
-}
-
-
-@layer utilities {
-    .bg-primary-color { background-color: var(--primary-color); }
-    .bg-secondary-color { background-color: var(--secondary-color); }
-    .bg-background-color { background-color: var(--background-color); }
-    .bg-card-color { background-color: var(--card-color); }
-
-    .text-primary-color { color: var(--primary-color); }
-    .text-secondary-color { color: var(--secondary-color); }
-    .text-text-color { color: var(--text-color); }
-    .text-card-color { color: var(--text-card-color); }
-    .text-neutral-color { color: var(--neutral-color); }
-    
-    .border-primary-color { border-color: var(--primary-color); }
-    .border-secondary-color { border-color: var(--secondary-color); }
-    .border-text-color { border-color: var(--text-color); }
+    --card-border-color: #4767b3;
+    --button-color: #2a4177;
 }
 
 body {

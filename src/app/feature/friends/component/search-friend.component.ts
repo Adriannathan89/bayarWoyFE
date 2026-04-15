@@ -4,11 +4,12 @@ import { FriendRequestService } from "../../../core/service/friend/friend-reques
 import { CommonModule } from "@angular/common";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { LucideSearch } from "@lucide/angular";
 
 @Component({
     selector: 'app-search-friend',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule],
+    imports: [CommonModule, ReactiveFormsModule, LucideSearch],
     template: `
         <div class="relative w-[800px] h-[400px] bg-secondary-color rounded-2xl p-8 shadow-md mt-4 mx-auto">
             <div class="mb-[20px]">
@@ -25,13 +26,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
             <button 
             type="submit"
             class="cursor-pointer">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="w-6 h-6 absolute right-18 top-25 transform -translate-y-1/2 text-secondary-color"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-            >
+            <svg lucideSearch class="w-6 h-6 absolute right-18 top-25 transform -translate-y-1/2 text-secondary-color">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M21 21l-4.35-4.35m1.85-5.65a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z" />
             </svg>
