@@ -8,14 +8,14 @@ import { Router } from "@angular/router";
         <nav class="w-full h-auto bg-transparent flex flex-col gap-12">
             <button 
             class="w-full text-lg font-semibold text-text-color hover:text-text-color/75 transition-colors duration-200 cursor-pointer flex items-center justify-center" 
-            (click)="navigateToAddFriend()">
-                Add Friend
+            (click)="navigateToFriendList()">
+                Friend List
             </button>
 
             <button 
             class="w-full text-lg font-semibold text-text-color hover:text-text-color/75 transition-colors duration-200 cursor-pointer flex items-center justify-center" 
-            (click)="navigateToFriendList()">
-                Friend List
+            (click)="navigateToAddFriend()">
+                Add Friend
             </button>
         </nav>
     `  
@@ -27,6 +27,6 @@ export class NavbarOnFriendPageComponent {
         this.router.navigate(['/friends/add']);
     }
     navigateToFriendList() {
-        this.router.navigate(['/friends/list']);
+        this.router.navigate(['/friends']);
     }
 }

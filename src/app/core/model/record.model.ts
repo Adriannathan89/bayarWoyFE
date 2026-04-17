@@ -1,4 +1,10 @@
-import { Record } from "./record";
+export type Record = {
+    id: string,
+    title: string,
+    description: string,
+    amount: number,
+    type: string,
+}
 
 export type UserRecord = {
     expenses: Record[],

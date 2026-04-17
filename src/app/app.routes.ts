@@ -17,15 +17,20 @@ export const routes: Routes = [
     },
     {
         path: "friends",
+        loadComponent: () => import('./feature/friends/index').then(m => m.IndexPage),
         canActivate: [authGuard],
-        loadComponent: () => import('./feature/friends/friend.page').then(m => m.FriendPage)
+        children: [
+            { path: "", loadComponent: () => import('./feature/friends/page/friend-list.page').then(m => m.FriendListPage) },
+            { path: "add", loadComponent: () => import('./feature/friends/page/add-friend.page').then(m => m.AddFriendPage) }
+        ]
     },
     {
         path: "transaction",
+        loadComponent: () => import('./feature/transaction/index').then(m => m.IndexPage),
         canActivate: [authGuard],
         children: [
-            { path: "", loadComponent: () => import('./feature/transaction/transaction.page').then(m => m.TransactionPage) },   
-            { path: "add", loadComponent: () => import('./feature/transaction/addTransaction.page').then(m => m.AddTransactionPage) }
+            { path: "", loadComponent: () => import('./feature/transaction/page/transaction.page').then(m => m.TransactionPage) },   
+            { path: "add", loadComponent: () => import('./feature/transaction/page/addTransaction.page').then(m => m.AddTransactionPage) }
         ]
     },
 ];

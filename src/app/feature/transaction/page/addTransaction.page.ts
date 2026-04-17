@@ -1,13 +1,11 @@
 import { Component } from "@angular/core";
-import { AddTransactionDesktopSubPage } from "./subPages/add-transaction-desktop.subpage";
-import { AddTransactionMobileSubPage } from "./subPages/add-transaction-mobile.subpages";
-import { HeaderComponent } from "../../shared/header.component";
+import { AddTransactionDesktopSubPage } from "../component/add-transaction-desktop.component";
+import { AddTransactionMobileSubPage } from "../component/add-transaction-mobile.component";
 
 @Component({
     standalone: true,
-    imports: [AddTransactionDesktopSubPage, AddTransactionMobileSubPage, HeaderComponent],
+    imports: [AddTransactionDesktopSubPage, AddTransactionMobileSubPage],
     template: `
-        <app-header></app-header>
         <div class="w-full h-[960px] px-8 justify-center max-xl:hidden">
             <app-add-transaction-desktop></app-add-transaction-desktop>
         </div>

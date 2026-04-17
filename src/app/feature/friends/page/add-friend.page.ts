@@ -62,9 +62,8 @@ import { LucideSearch } from "@lucide/angular";
         </div>
     `
 })
-export class SearchFriendComponent {
+export class AddFriendPage {
     friendResponse: Friend[] = [];
-    error: string | null = null;
     loading = false;
     hasSearched = false;
     queryForm;
@@ -82,7 +81,6 @@ export class SearchFriendComponent {
     searchFriend() {
         const query = String(this.queryForm.value.query);
         this.loading = true;
-        this.error = null;
 
         this.friendService.searchFriend(query)
             .then((res: any) => {
@@ -95,7 +93,6 @@ export class SearchFriendComponent {
             })
             .catch((err: any) => {
                 this.loading = false;
-                this.error = err.message;
                 this.friendResponse = [];
             }).finally(() => {
                 this.loading = false;
@@ -119,7 +116,6 @@ export class SearchFriendComponent {
                 });
             })
             .catch((err: any) => {
-                this.error = err.message;
                 this.snackBar.open('Failed to send friend request.', 'Close', {
                     duration: 3000
                 });

@@ -1,16 +1,15 @@
 import { Component, ChangeDetectorRef } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { HeaderComponent } from "../../shared/header.component";
+import { HeaderComponent } from "@/shared/header.component";
 import { Router } from "@angular/router";
-import { UserRecordsService } from "../../core/service/user/user-records.service";
-import { UserRecord } from "../../core/service/types/user_record";
+import { UserRecordsService } from "@/core/service/user/user-records.service";
+import { UserRecord } from "@/core/model/record.model";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
     standalone: true,
-    imports: [HeaderComponent, CommonModule],
+    imports: [CommonModule],
     template: `
-        <app-header></app-header>
         <div class="w-full flex flex-col items-center py-12 px-4">
             <p class="text-2xl font-bold mb-8">Dashboard Keuangan</p>
             <div class="w-full max-w-6xl">
@@ -78,7 +77,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 
                             <div>
                                 <h3 class="font-bold text-red-500 border-b-2 border-red-500 pb-2 mb-4">Pengeluaran</h3>
-                                <div class="space-y-2 max-h-96 overflow-y-auto">
+                                <div class="space-y-2 min-h-32 overflow-h-auto">
                                     @for (exp of record.expenses || []; track exp.id) {
                                         <div class="bg-primary-color p-3 rounded shadow-md border-l-4 border-red-400">
                                             <p class="font-semibold text-text-color text-sm">{{ exp.title }}</p>
@@ -93,7 +92,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 
                             <div>
                                 <h3 class="font-bold text-green-500 border-b-2 border-green-500 pb-2 mb-4">Pemasukkan</h3>
-                                <div class="space-y-2 max-h-96 overflow-y-auto">
+                                <div class="space-y-2 min-h-32 overflow-h-auto">
                                     @for (inc of record.incomes || []; track inc.id) {
                                         <div class="bg-primary-color p-3 rounded shadow-xl border-l-4 border-green-400">
                                             <p class="font-semibold text-text-color text-sm">{{ inc.title }}</p>
@@ -108,7 +107,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 
                             <div>
                                 <h3 class="font-bold text-orange-500 border-b-2 shadow-md border-orange-500 pb-2 mb-4">Hutang</h3>
-                                <div class="space-y-2 max-h-96 overflow-y-auto">
+                                <div class="space-y-2 min-h-32 overflow-h-auto">
                                     @for (debt of record.debts || []; track debt.id) {
                                         <div class="bg-primary-color p-3 rounded shadow-md border-l-4 border-orange-400">
                                             <p class="font-semibold text-text-color text-sm">{{ debt.title }}</p>

@@ -13,9 +13,9 @@ import { MatSnackBar } from "@angular/material/snack-bar";
     template: `
         <div class="w-full flex items-center justify-center p-6">
             <div class="w-full max-w-5xl">
-                <div class="bg-background-color rounded-3xl shadow-xl">
+                <div class="bg-background-color rounded-3xl shadow-xl border-1 border-secondary-color">
                     <form [formGroup]="transactionForm" class="p-12" (ngSubmit)="handleSubmit()">
-                        <div class="mb-10 mt-40">
+                        <div class="mb-10">
                             <div class="flex items-center mb-6">
                                 <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-card-color rounded-lg">
                                     <span class="text-xl font-bold text-white">1</span>

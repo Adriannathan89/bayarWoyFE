@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { viteEnv } from "../../../../environments/environment.generated";
-import { UserRecord } from "../types/user_record";
-import { Record } from "../types/record";
+import { Record, UserRecord } from "@/core/model/record.model";
 
 @Injectable({
     providedIn: 'root'
