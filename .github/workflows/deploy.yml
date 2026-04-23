@@ -56,7 +56,7 @@ jobs:
           envs: IMAGE_NAME,IMAGE_TAG,APP_PORT,GHCR_USER,GHCR_TOKEN
           script: |
             set -e
-            mkdir /root/bayarwoy-fe
+            mkdir -p /root/bayarwoy-fe
             cd /root/bayarwoy-fe
 
             echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
@@ -72,4 +72,4 @@ jobs:
             EOF
 
             docker compose pull
-            docker compose up -d --remove-orphans
+            docker compose up -d --force-recreate --remove-orphans
