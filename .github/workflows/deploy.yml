@@ -1,16 +1,9 @@
 name: Deploy
 
 on:
-  workflow_dispatch:
-    inputs:
-      image_tag:
-        description: Docker image tag to deploy
-        required: true
-        default: latest
-      app_port:
-        description: Host port mapped to container port 80
-        required: true
-        default: "8080"
+  push:
+    branches:
+      - master
 
 permissions:
   contents: read
@@ -48,8 +41,8 @@ jobs:
         uses: appleboy/ssh-action@v1.2.2
         env:
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
-          IMAGE_TAG: ${{ github.event.inputs.image_tag }}
-          APP_PORT: ${{ github.event.inputs.app_port }}
+          IMAGE_TAG: latest
+          APP_PORT: ${{ secrets.APP_PORT }}
           GHCR_USER: ${{ secrets.GHCR_READ_USERNAME }}
           GHCR_TOKEN: ${{ secrets.GHCR_READ_TOKEN }}
         with:
@@ -60,8 +53,8 @@ jobs:
           envs: IMAGE_NAME,IMAGE_TAG,APP_PORT,GHCR_USER,GHCR_TOKEN
           script: |
             set -e
-            mkdir -p ~/bayarwoy-fe
-            cd ~/bayarwoy-fe
+            mkdir /root/bayarwoy-fe
+            cd /root/bayarwoy-fe
 
             echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
 
