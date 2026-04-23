@@ -103,4 +103,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL || 'http://localhost:8080/api' }}
+            VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL}}
