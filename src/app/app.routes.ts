@@ -14,17 +14,22 @@ export const routes: Routes = [
     {
         path: "dashboard",
         canActivate: [authGuard],
-        loadComponent: () => import('./feature/dashboard/dashboard.page').then(m => m.DashboardPage)
+        loadComponent: () => import('./shared/underContructionSite.page').then(m => m.UnderConstructionSitePage)
     },
+    // {
+    //     path: "friends",
+    //     loadComponent: () => import('./feature/friends/index').then(m => m.IndexPage),
+    //     canActivate: [authGuard],
+    //     children: [
+    //         { path: "", loadComponent: () => import('./feature/friends/page/friend-list.page').then(m => m.FriendListPage) },
+    //         { path: "add", loadComponent: () => import('./feature/friends/page/add-friend.page').then(m => m.AddFriendPage) },
+    //         { path: "requests", loadComponent: () => import('./feature/friends/page/friend-request.page').then(m => m.FriendRequestPage) }
+    //     ]
+    // },
     {
         path: "friends",
-        loadComponent: () => import('./feature/friends/index').then(m => m.IndexPage),
         canActivate: [authGuard],
-        children: [
-            { path: "", loadComponent: () => import('./feature/friends/page/friend-list.page').then(m => m.FriendListPage) },
-            { path: "add", loadComponent: () => import('./feature/friends/page/add-friend.page').then(m => m.AddFriendPage) },
-            { path: "requests", loadComponent: () => import('./feature/friends/page/friend-request.page').then(m => m.FriendRequestPage) }
-        ]
+        loadComponent: () => import('./shared/underContructionSite.page').then(m => m.UnderConstructionSitePage)
     },
     {
         path: "transaction",
