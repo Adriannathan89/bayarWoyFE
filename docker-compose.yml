@@ -1,0 +1,7 @@
+services:
+  bayarwoy-fe:
+    image: ${IMAGE_NAME:-ghcr.io/owner/repo}:${IMAGE_TAG:-latest}
+    container_name: bayarwoy-fe
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8080}:80"

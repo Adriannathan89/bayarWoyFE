@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
 import { viteEnv } from "../../../../environments/environment.generated";
-import { HttpClient } from "@angular/common/http";
 
 
 export type Friend = {
@@ -13,10 +12,10 @@ export type Friend = {
     providedIn: "root"
 })
 export class FriendService {
-    constructor(private http: HttpClient) {}
+    private readonly apiBaseUrl = viteEnv.VITE_API_BASE_URL;
 
     async getFriend() {
-        const connectionURL = viteEnv.VITE_GET_FRIENDS_ENDPOINT;
+        const connectionURL = `${this.apiBaseUrl}/user/friend`;
 
         const res = await fetch(connectionURL, {
             method: 'GET',
@@ -31,6 +30,11 @@ export class FriendService {
         }
 
         const json = await res.json();
+
+        if(json.data === null) {
+            return [];
+        }
+
         const data: Friend[] = json.data.map((friend: any) => ({
             id: friend.id,
             username: friend.username,
@@ -41,7 +45,7 @@ export class FriendService {
     }
 
     async searchFriend(keyword: string) {
-        const connectionURL = viteEnv.VITE_SEARCH_FRIEND_ENDPOINT;
+        const connectionURL = `${this.apiBaseUrl}/user/friend/search`;
         const body = {
             name: keyword
         }
@@ -60,6 +64,11 @@ export class FriendService {
         }
 
         const json = await res.json();
+        
+        if(json.data === null) {
+            return [];
+        }
+
         const data: Friend[] = json.data.map((friend: any) => ({
             id: friend.id,
             username: friend.username,

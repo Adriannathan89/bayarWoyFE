@@ -6,8 +6,10 @@ import { Record, UserRecord } from "@/core/model/record.model";
     providedIn: 'root'
 })
 export class UserRecordsService {
+    private readonly apiBaseUrl = viteEnv.VITE_API_BASE_URL;
+
     async createRecord(title: string, description: string, amount: number, type: string) {
-        const connectionURL = viteEnv.VITE_CREATE_EXPENSE_ENDPOINT;
+        const connectionURL = `${this.apiBaseUrl}/user/record`;
 
         const body = {
             title: title,
@@ -45,7 +47,7 @@ export class UserRecordsService {
     }
 
     async getRecords() {
-        const connectionURL = viteEnv.VITE_GET_EXPENSE_ENDPOINT;
+        const connectionURL = `${this.apiBaseUrl}/user/records`;
 
         const res = await fetch(connectionURL, {
             method: 'GET',

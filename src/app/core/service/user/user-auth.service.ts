@@ -4,13 +4,15 @@ import { viteEnv } from "../../../../environments/environment.generated";
 
 @Injectable({providedIn: 'root'})
 export class UserAuthService {
+    private readonly apiBaseUrl = viteEnv.VITE_API_BASE_URL;
+
     async login(username: string, password: string) {
         const body = {
             username: username,
             password: password
         }
 
-        const connectionURL = viteEnv.VITE_LOGIN_ENDPOINT;
+        const connectionURL = `${this.apiBaseUrl}/auth/login`;
 
         const res = await fetch(connectionURL, {
             method: 'POST',
@@ -29,7 +31,7 @@ export class UserAuthService {
     }
 
     async logout() {
-        const connectionURL = viteEnv.VITE_LOGOUT_ENDPOINT;
+        const connectionURL = `${this.apiBaseUrl}/auth/logout`;
 
         const res = await fetch(connectionURL, {
             method: 'POST',
@@ -41,7 +43,7 @@ export class UserAuthService {
     }
 
     async refreshToken() {
-        const connectionURL = viteEnv.VITE_REFRESH_ENDPOINT;
+        const connectionURL = `${this.apiBaseUrl}/auth/refresh`;
 
         const res = await fetch(connectionURL, {
             method: 'POST',
@@ -55,7 +57,7 @@ export class UserAuthService {
     }
 
     async isAuthenticated() {
-        const connectionURL = viteEnv.VITE_VALIDATE_SESSION_ENDPOINT;
+        const connectionURL = `${this.apiBaseUrl}/auth/validate-session`;
 
         const res = await fetch(connectionURL, {
             method: 'GET',

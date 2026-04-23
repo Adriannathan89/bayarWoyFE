@@ -8,7 +8,8 @@ export const routes: Routes = [
     },
     {
         "path": "",
-        "loadComponent": () => import("./feature/home/home.page").then(m => m.HomePage)
+        "redirectTo": "dashboard",
+        "pathMatch": "full"
     },
     {
         path: "dashboard",
@@ -21,7 +22,8 @@ export const routes: Routes = [
         canActivate: [authGuard],
         children: [
             { path: "", loadComponent: () => import('./feature/friends/page/friend-list.page').then(m => m.FriendListPage) },
-            { path: "add", loadComponent: () => import('./feature/friends/page/add-friend.page').then(m => m.AddFriendPage) }
+            { path: "add", loadComponent: () => import('./feature/friends/page/add-friend.page').then(m => m.AddFriendPage) },
+            { path: "requests", loadComponent: () => import('./feature/friends/page/friend-request.page').then(m => m.FriendRequestPage) }
         ]
     },
     {

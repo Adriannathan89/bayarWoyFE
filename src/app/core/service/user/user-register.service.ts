@@ -10,7 +10,7 @@ export type RegisterRequest = {
     providedIn: 'root'
 })
 export class UserRegisterService {
-    private connectionURL = viteEnv.VITE_REGISTER_ENDPOINT;
+    private readonly connectionURL = `${viteEnv.VITE_API_BASE_URL}/user/register`;
 
     async register(username: string, password: string) {
         const body: RegisterRequest = {

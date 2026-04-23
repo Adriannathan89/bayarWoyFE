@@ -5,8 +5,10 @@ import { viteEnv } from "../../../../environments/environment.generated";
     providedIn: 'root'
 })
 export class TransactionService {
+    private readonly apiBaseUrl = viteEnv.VITE_API_BASE_URL;
+
     async getTransactions() {
-        const connectionURL = viteEnv.VITE_GET_TRANSACTION_ENDPOINT;
+        const connectionURL = `${this.apiBaseUrl}/transaction`;
 
         const res = await fetch(connectionURL, {
             method: 'GET',
@@ -26,7 +28,7 @@ export class TransactionService {
     }
 
     async createTransaction(description: string, amount: number, debtorId: string) {
-        const connectionURL = viteEnv.VITE_CREATE_TRANSACTION_ENDPOINT;
+        const connectionURL = `${this.apiBaseUrl}/transaction/create`;
         const body = {
             description: description,
             amount: amount,
@@ -50,7 +52,7 @@ export class TransactionService {
     }
 
     async finishTransaction(transactionId: string) {
-        const connectionURL = viteEnv.VITE_FINISH_TRANSACTION_ENDPOINT;
+        const connectionURL = `${this.apiBaseUrl}/transaction/finish`;
         const body = {
             transactionId: transactionId
         }

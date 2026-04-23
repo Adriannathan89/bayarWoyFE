@@ -12,8 +12,10 @@ export type FriendRequest = {
     providedIn: 'root'
 })
 export class FriendRequestService {
+    private readonly apiBaseUrl = viteEnv.VITE_API_BASE_URL;
+
     async getFriendsRequest() {
-        const connectionURL = viteEnv.VITE_GET_FRIENDS_REQUEST_ENDPOINT;
+        const connectionURL = `${this.apiBaseUrl}/user/friend`;
 
         const res = await fetch(connectionURL, {
             method: 'GET',
@@ -39,7 +41,7 @@ export class FriendRequestService {
 
 
     async sendFriendRequest(friendId: string) {
-        const connectionURL = viteEnv.VITE_SEND_FRIEND_REQUEST_ENDPOINT;
+        const connectionURL = `${this.apiBaseUrl}/user/friend/add`;
         const body = {
             friendId: friendId
         }
@@ -61,7 +63,7 @@ export class FriendRequestService {
     }
 
     async responseFriendRequest(friendRequestId: string, action: 'accept' | 'reject') {
-        const connectionURL = viteEnv.VITE_RESPONSE_FRIEND_REQUEST_ENDPOINT;
+        const connectionURL = `${this.apiBaseUrl}/user/friend/response`;
         const body = {
             friendRequestId: friendRequestId,
             action: action
