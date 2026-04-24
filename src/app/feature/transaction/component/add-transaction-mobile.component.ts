@@ -5,6 +5,7 @@ import { UserRecordsService } from "../../../core/service/user/user-records.serv
 import { FormBuilder, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 import { ChangeDetectorRef } from "@angular/core";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
     standalone: true,
@@ -115,7 +116,13 @@ export class AddTransactionMobileSubPage {
     transactionForm;
     phase_1: boolean = true;
 
-    constructor(private fb: FormBuilder, private router: Router, private recordsService: UserRecordsService, private cdr: ChangeDetectorRef) {
+    constructor(
+        private fb: FormBuilder,
+        private router: Router,
+        private recordsService: UserRecordsService,
+        private cdr: ChangeDetectorRef,
+        private snackbar: MatSnackBar
+    ) {
         this.transactionForm = this.fb.group({
             title: ['', Validators.required],
             amount: ['', [Validators.required, Validators.min(0)]],
@@ -140,9 +147,14 @@ export class AddTransactionMobileSubPage {
 
             const formatedAmount = parseInt(amount!.replace(/\,/g, ''), 10);
             if (!debtor && this.transactionForm.valid) {
-                this.recordsService.createRecord(title!, description!, formatedAmount, type!).then(() => {
-                    this.router.navigate(['/transaction']);
-                });
+                try {
+                    this.recordsService.createRecord(title!, description!, formatedAmount, type!).then(() => {
+                        this.snackbar.open('Transaksi berhasil disimpan!', 'Tutup', { duration: 3000 });
+                        this.router.navigate(['/transaction']);
+                    });
+                } catch {
+                    this.snackbar.open('Gagal menyimpan transaksi. Silakan coba lagi.', 'Tutup', { duration: 3000 });
+                }
             }
         }
     }

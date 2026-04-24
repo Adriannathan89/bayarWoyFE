@@ -70,7 +70,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
                                 </div>
                                 <div class="bg-primary-color rounded-xl p-4 shadow-sm">
                                     <p class="text-secondary-color text-sm mb-1">Jumlah</p>
-                                    <p class="text-2xl font-bold text-card-color">Rp {{ transactionForm.get('amount')?.value || '0' }}</p>
+                                    <p class="text-2xl font-bold text-card-color">Rp {{ formatValueAmount(transactionForm.get('amount')?.value || '0')}}</p>
                                 </div>
                                 <div class="bg-primary-color rounded-xl p-4 shadow-sm">
                                     <p class="text-secondary-color text-sm mb-1">Status</p>
@@ -121,6 +121,7 @@ export class AddTransactionDesktopSubPage {
             const formatedAmount = parseInt(amount!.replace(/\,/g, ''), 10);
             if (!debtor && this.transactionForm.valid) {
                 this.recordsService.createRecord(title!, description!, formatedAmount, type!).then(() => {
+                    this.snackBar.open('Transaksi berhasil disimpan!', 'Tutup', { duration: 3000 });
                     this.router.navigate(['/transaction']);
                 }).catch(err => {
                     this.snackBar.open('Gagal menambahkan transaksi. Silakan coba lagi.', 'Tutup', { duration: 3000 });
@@ -133,11 +134,15 @@ export class AddTransactionDesktopSubPage {
         const input = event.target as HTMLInputElement;
         let value = input.value.replace(/^0+(?=\d)/, "").replace(/\D/g, "");
 
-
-        const numericValue = parseInt(value, 10);
-
         value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         input.value = value;
+    }
+
+    formatValueAmount(value: string): string {
+        let amount = value.replace(/^0+(?=\d)/, "").replace(/\D/g, "");
+        amount = amount.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+        return amount;
     }
 
     goBack() {
