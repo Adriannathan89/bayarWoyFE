@@ -42,20 +42,6 @@ export class UserAuthService {
         })
     }
 
-    async refreshToken() {
-        const connectionURL = `${this.apiBaseUrl}/auth/refresh`;
-
-        const res = await fetch(connectionURL, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-
-        return res.ok;
-    }
-
     async isAuthenticated() {
         const connectionURL = `${this.apiBaseUrl}/auth/validate-session`;
 
