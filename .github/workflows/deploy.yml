@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   workflow_run:
-    workflows: ["CI/CD"]
+    workflows: ["CI/CD", "ci-cd", "cd-cd"]
     types:
       - completed
     branches:
@@ -14,6 +14,7 @@ permissions:
 jobs:
   deploy:
     name: Deploy To VPS
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
