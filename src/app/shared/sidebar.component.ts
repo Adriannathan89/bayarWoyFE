@@ -1,10 +1,7 @@
-import { Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import {
-  LucideHouse, LucideReceipt, LucideUsers,
-  LucideSun, LucideMoon, LucideLogOut,
-} from '@lucide/angular';
-import { SwithTheme } from '../core/service/styles/switch-theme.service';
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { LucideHouse, LucideReceipt, LucideUsers, LucideLogOut } from '@lucide/angular';
 import { UserAuthService } from '../core/service/user/user-auth.service';
 
 @Component({
@@ -12,8 +9,7 @@ import { UserAuthService } from '../core/service/user/user-auth.service';
   standalone: true,
   imports: [
     RouterLink, RouterLinkActive,
-    LucideHouse, LucideReceipt, LucideUsers,
-    LucideSun, LucideMoon, LucideLogOut,
+    LucideHouse, LucideReceipt, LucideUsers, LucideLogOut,
   ],
   styles: [`
     .bw-logo-mark {
@@ -77,25 +73,12 @@ import { UserAuthService } from '../core/service/user/user-auth.service';
 
       <!-- Bottom -->
       <div class="p-3 border-t border-bw-border">
-        <button
-          (click)="toggleTheme()"
-          class="flex items-center gap-2 w-full px-3 py-2.5 rounded-[10px] text-[13px] font-medium text-bw-ink-2 hover:bg-bw-sunken transition-colors mb-1.5 cursor-pointer"
-        >
-          @if (isDark) {
-            <svg lucideSun class="w-4 h-4 shrink-0"></svg>
-            <span>Mode terang</span>
-          } @else {
-            <svg lucideMoon class="w-4 h-4 shrink-0"></svg>
-            <span>Mode gelap</span>
-          }
-        </button>
-
         <div class="flex items-center gap-2.5 p-2 rounded-[10px] bg-bw-elevated">
           <span class="w-9 h-9 rounded-full bg-bw-lime text-bw-ink flex items-center justify-center text-[13px] font-bold shrink-0 select-none">
-            {{ userInitials }}
+            {{ userInitials() }}
           </span>
           <div class="flex-1 min-w-0">
-            <div class="text-[13px] font-bold text-bw-ink truncate">{{ username }}</div>
+            <div class="text-[13px] font-bold text-bw-ink truncate">{{ username() }}</div>
             <button
               (click)="logout()"
               class="flex items-center gap-1 text-[11px] text-bw-ink-3 hover:text-bw-red transition-colors cursor-pointer mt-0.5"
@@ -109,22 +92,25 @@ import { UserAuthService } from '../core/service/user/user-auth.service';
     </aside>
   `,
 })
-export class SidebarComponent {
-  private themeService = inject(SwithTheme);
+export class SidebarComponent implements OnInit {
   private authService = inject(UserAuthService);
   private router = inject(Router);
 
-  get isDark() { return this.themeService.isDark; }
+  username = signal('');
+  userInitials = signal('?');
 
-  get username(): string {
-    return localStorage.getItem('username') ?? 'user';
+  ngOnInit() {
+    this.refreshUser();
+    this.router.events
+      .pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe(() => this.refreshUser());
   }
 
-  get userInitials(): string {
-    return this.username.slice(0, 2).toUpperCase();
+  private refreshUser() {
+    const u = localStorage.getItem('username') ?? '';
+    this.username.set(u);
+    this.userInitials.set(u ? u.slice(0, 2).toUpperCase() : '?');
   }
-
-  toggleTheme() { this.themeService.toggleTheme(); }
 
   async logout() {
     await this.authService.logout();

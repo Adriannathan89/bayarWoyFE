@@ -160,21 +160,6 @@ interface TxGroup {
             </div>
           }
         </div>
-
-        <!-- Insight card -->
-        <div class="bw-card p-4 animate-fade-slide-up" style="animation-delay:120ms;background:var(--bw-ink);border-color:var(--bw-ink)">
-          <div class="text-[13px] font-bold text-bw-on-ink mb-1">📊 Insight</div>
-          <div class="text-[12px] leading-relaxed" style="color:rgba(245,244,239,0.65)">
-            Total {{ totalTxCount() }} transaksi di bulan ini. Pengeluaran terbesar di
-            <strong style="color:var(--bw-lime)">{{ topCategory() }}</strong>.
-          </div>
-          <button (click)="goToAdd()"
-            class="mt-3 px-3 py-1.5 rounded-[8px] text-[12px] font-semibold cursor-pointer"
-            style="background:var(--bw-lime);color:var(--bw-ink)">
-            Catat transaksi
-          </button>
-        </div>
-
       </div>
     </div>
 

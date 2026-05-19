@@ -1,16 +1,45 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd, ActivatedRoute } from '@angular/router';
-import { filter, map } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { SidebarComponent } from './sidebar.component';
 import { TopbarComponent } from './topbar.component';
 import { BottomNavComponent } from './bottom-nav.component';
-import { LucideBell } from '@lucide/angular';
+import { LucideBell, LucideSun, LucideMoon } from '@lucide/angular';
 import { SwithTheme } from '../core/service/styles/switch-theme.service';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [RouterOutlet, SidebarComponent, TopbarComponent, BottomNavComponent, LucideBell],
+  imports: [RouterOutlet, SidebarComponent, TopbarComponent, BottomNavComponent, LucideBell, LucideSun, LucideMoon],
+  styles: [`
+    .theme-btn-m {
+      position: relative; overflow: hidden;
+      width: 40px; height: 40px; border-radius: 12px;
+      border: 1px solid var(--bw-border); background: var(--bw-surface);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--bw-ink-2); flex-shrink: 0;
+    }
+    .theme-btn-m:hover { background: var(--bw-sunken); }
+    .ripple-m {
+      position: absolute; inset: 0; border-radius: inherit;
+      background: var(--bw-lime); opacity: 0; pointer-events: none;
+    }
+    .theme-btn-m.toggling .ripple-m { animation: btn-ripple-m 0.48s ease-out forwards; }
+    .icon-m { display: flex; align-items: center; justify-content: center; }
+    .icon-m.spinning { animation: icon-morph-m 0.48s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+    @keyframes icon-morph-m {
+      0%   { transform: scale(1) rotate(0deg);    opacity: 1; }
+      38%  { transform: scale(0) rotate(-210deg); opacity: 0; }
+      62%  { transform: scale(0) rotate(210deg);  opacity: 0; }
+      100% { transform: scale(1) rotate(0deg);    opacity: 1; }
+    }
+    @keyframes btn-ripple-m {
+      0%   { opacity: 0.22; transform: scale(0.5); }
+      55%  { opacity: 0.10; transform: scale(1.3); }
+      100% { opacity: 0;    transform: scale(1); }
+    }
+  `],
   template: `
     <div class="flex h-screen overflow-hidden bg-bw-bg">
 
@@ -21,7 +50,7 @@ import { SwithTheme } from '../core/service/styles/switch-theme.service';
       <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
 
         <!-- Desktop topbar -->
-        <app-topbar class="hidden md:block" [title]="pageTitle()"></app-topbar>
+        <app-topbar [title]="pageTitle()"></app-topbar>
 
         <!-- Mobile header -->
         <header class="flex md:hidden items-center justify-between px-5 pt-4 pb-3 bg-bw-bg shrink-0">
@@ -33,9 +62,22 @@ import { SwithTheme } from '../core/service/styles/switch-theme.service';
               {{ pageTitle() }}
             </h1>
           </div>
-          <button class="w-10 h-10 rounded-[12px] flex items-center justify-center border border-bw-border bg-bw-surface text-bw-ink-2 cursor-pointer">
-            <svg lucideBell class="w-5 h-5"></svg>
-          </button>
+          <div class="flex items-center gap-2">
+            <button class="theme-btn-m" [class.toggling]="mAnimating()" (click)="toggleThemeMobile()"
+                    [attr.title]="isDark ? 'Mode terang' : 'Mode gelap'">
+              <span class="ripple-m"></span>
+              <span class="icon-m" [class.spinning]="mAnimating()">
+                @if (isDark) {
+                  <svg lucideSun class="w-5 h-5"></svg>
+                } @else {
+                  <svg lucideMoon class="w-5 h-5"></svg>
+                }
+              </span>
+            </button>
+            <button class="w-10 h-10 rounded-[12px] flex items-center justify-center border border-bw-border bg-bw-surface text-bw-ink-2 cursor-pointer">
+              <svg lucideBell class="w-5 h-5"></svg>
+            </button>
+          </div>
         </header>
 
         <!-- Content -->
@@ -44,7 +86,7 @@ import { SwithTheme } from '../core/service/styles/switch-theme.service';
         </main>
 
         <!-- Mobile bottom nav -->
-        <app-bottom-nav class="flex md:hidden fixed bottom-0 left-0 right-0 z-50"></app-bottom-nav>
+        <app-bottom-nav></app-bottom-nav>
 
       </div>
     </div>
@@ -53,8 +95,19 @@ import { SwithTheme } from '../core/service/styles/switch-theme.service';
 export class MainLayoutComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private themeService = inject(SwithTheme);
 
   pageTitle = signal('Home');
+  mAnimating = signal(false);
+
+  get isDark() { return this.themeService.isDark; }
+
+  toggleThemeMobile() {
+    if (this.mAnimating()) return;
+    this.mAnimating.set(true);
+    setTimeout(() => this.themeService.toggleTheme(), 182);
+    setTimeout(() => this.mAnimating.set(false), 500);
+  }
 
   readonly todayLabel = new Intl.DateTimeFormat('id-ID', {
     weekday: 'long', day: 'numeric', month: 'long',

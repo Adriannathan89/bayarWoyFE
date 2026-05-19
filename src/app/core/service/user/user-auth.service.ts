@@ -14,8 +14,12 @@ export class UserAuthService {
 
   async isAuthenticated() {
     try {
-      await axiosInstance.get('/auth/validate-session');
-      return true;
+      const res = await axiosInstance.get('/auth/validate-session');
+      if (res.status === 200) {
+        return true;
+      } else {
+        return false;
+      }
     } catch {
       return false;
     }

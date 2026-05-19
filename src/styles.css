@@ -8,19 +8,20 @@
   --color-bw-sunken:       var(--bw-sunken);
 
   /* Borders */
-  --color-bw-border:       var(--bw-border);
+  --color-bw-border:        var(--bw-border);
   --color-bw-border-strong: var(--bw-border-strong);
 
   /* Ink (text layers) */
-  --color-bw-ink:          var(--bw-ink);
-  --color-bw-ink-2:        var(--bw-ink-2);
-  --color-bw-ink-3:        var(--bw-ink-3);
-  --color-bw-ink-4:        var(--bw-ink-4);
+  --color-bw-ink:    var(--bw-ink);
+  --color-bw-ink-2:  var(--bw-ink-2);
+  --color-bw-ink-3:  var(--bw-ink-3);
+  --color-bw-ink-4:  var(--bw-ink-4);
 
   /* Accents */
   --color-bw-lime:         var(--bw-lime);
   --color-bw-lime-soft:    var(--bw-lime-soft);
   --color-bw-lime-ink:     var(--bw-lime-ink);
+  --color-bw-lime-alpha:   var(--bw-lime-alpha);
   --color-bw-amber:        var(--bw-amber);
   --color-bw-amber-soft:   var(--bw-amber-soft);
   --color-bw-red:          var(--bw-red);
@@ -28,84 +29,129 @@
   --color-bw-green:        var(--bw-green);
   --color-bw-green-soft:   var(--bw-green-soft);
   --color-bw-on-ink:       var(--bw-on-ink);
+  --color-bw-on-ink-dim:   var(--bw-on-ink-dim);
+  --color-bw-on-ink-ghost: var(--bw-on-ink-ghost);
+  --color-bw-on-ink-muted: var(--bw-on-ink-muted);
+  --color-bw-on-ink-soft:  var(--bw-on-ink-soft);
 
   /* Typography */
   --font-sans: var(--bw-font-sans);
   --font-mono: var(--bw-font-mono);
 }
 
-/* ── Design tokens ─────────────────────────────────────────── */
+/* ── Light mode tokens ─────────────────────────────────────── */
 :root {
-  --bw-bg:        #f5f4ef;
-  --bw-surface:   #ffffff;
-  --bw-elevated:  #faf9f5;
-  --bw-sunken:    #efeee8;
+  /* Surfaces — warm parchment hierarchy */
+  --bw-bg:       #f0efe9;   /* warm cream canvas */
+  --bw-surface:  #ffffff;   /* pure white cards */
+  --bw-elevated: #f7f6f0;   /* slightly warm elevated */
+  --bw-sunken:   #e5e3d9;   /* clearly recessed */
 
-  --bw-border:        #e6e4dc;
-  --bw-border-strong: #d4d1c6;
+  /* Borders */
+  --bw-border:        #d8d5cb;
+  --bw-border-strong: #c2bfb1;
 
+  /* Ink (text) */
   --bw-ink:   #0a0a08;
-  --bw-ink-2: #4a4a44;
-  --bw-ink-3: #8a877d;
-  --bw-ink-4: #b8b5a8;
+  --bw-ink-2: #46433c;
+  --bw-ink-3: #857f73;
+  --bw-ink-4: #b4b0a2;
 
+  /* Lime accent */
   --bw-lime:       #b5e60e;
-  --bw-lime-soft:  #ebfac4;
-  --bw-lime-ink:   #4a6403;
+  --bw-lime-soft:  #eaf9c0;
+  --bw-lime-ink:   #496203;
+  --bw-lime-alpha: rgba(181,230,14,0.14);
 
+  /* Semantic accents */
   --bw-amber:      #f5b800;
-  --bw-amber-soft: #fff1c2;
-
+  --bw-amber-soft: #fff0bd;
   --bw-red:        #e84a3a;
-  --bw-red-soft:   #ffe1dd;
-
+  --bw-red-soft:   #fee0db;
   --bw-green:      #2da966;
-  --bw-green-soft: #cdf2dd;
+  --bw-green-soft: #c8f1d8;
 
-  --bw-on-ink: #fafaf7;
+  /* On-ink — text on dark/ink backgrounds */
+  --bw-on-ink:        #f0efe9;   /* warm white — mirrors dark-mode bg for cohesion */
+  --bw-on-ink-dim:    rgba(240,239,233,0.50);
+  --bw-on-ink-ghost:  rgba(240,239,233,0.08);
+  --bw-on-ink-muted:  rgba(240,239,233,0.62);
+  --bw-on-ink-soft:   rgba(240,239,233,0.68);
 
+  /* Shadows — natural warm-black depth */
+  --bw-shadow-sm:  0 1px 3px rgba(12,10,4,0.06);
+  --bw-shadow-md:  0 4px 16px rgba(12,10,4,0.08), 0 1px 4px rgba(12,10,4,0.04);
+  --bw-shadow-lg:  0 14px 36px rgba(12,10,4,0.10), 0 3px 8px rgba(12,10,4,0.05);
+  --bw-shadow-fab: 0 6px 18px rgba(12,10,4,0.22), 0 2px 5px rgba(12,10,4,0.14);
+
+  /* Hero card — always dark in light mode */
+  --bw-hero-bg: var(--bw-ink);
+
+  /* Focus ring */
+  --bw-ring-lime: rgba(181,230,14,0.36);
+
+  /* Radii */
   --bw-r-sm:   8px;
   --bw-r-md:   12px;
   --bw-r-lg:   18px;
   --bw-r-xl:   24px;
   --bw-r-pill: 999px;
 
-  --bw-shadow-sm: 0 1px 2px rgba(15,12,5,0.04);
-  --bw-shadow-md: 0 4px 14px rgba(15,12,5,0.06), 0 1px 2px rgba(15,12,5,0.04);
-  --bw-shadow-lg: 0 12px 32px rgba(15,12,5,0.08), 0 2px 6px rgba(15,12,5,0.05);
-
+  /* Typography */
   --bw-font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --bw-font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
+/* ── Dark mode tokens ──────────────────────────────────────── */
 .bw-dark {
-  --bw-bg:        #0c0c0a;
-  --bw-surface:   #17170f;
-  --bw-elevated:  #1f1f17;
-  --bw-sunken:    #0a0a08;
+  /* Surfaces — distinct warm-charcoal hierarchy */
+  --bw-bg:       #0d0d0a;   /* near-black with faint warmth */
+  --bw-surface:  #151411;   /* clear step above bg */
+  --bw-elevated: #1c1b16;   /* well-defined elevation */
+  --bw-sunken:   #080806;   /* clearly below bg */
 
-  --bw-border:        #2a2920;
-  --bw-border-strong: #3a3930;
+  /* Borders */
+  --bw-border:        #242219;   /* subtle definition */
+  --bw-border-strong: #322e23;   /* visible separation */
 
-  --bw-ink:   #f5f4ef;
-  --bw-ink-2: #b8b5a8;
-  --bw-ink-3: #807d72;
-  --bw-ink-4: #4a4942;
+  /* Ink (text) — warm white mirroring light-mode bg */
+  --bw-ink:   #f0efe9;
+  --bw-ink-2: #b4b0a2;
+  --bw-ink-3: #7c7870;
+  --bw-ink-4: #4a4742;
 
-  --bw-lime:       #c9f739;
-  --bw-lime-soft:  #2a3a05;
-  --bw-lime-ink:   #d9ff5e;
+  /* Lime — more vivid to pop on dark */
+  --bw-lime:       #c8f534;
+  --bw-lime-soft:  #1b2d03;
+  --bw-lime-ink:   #deff5c;
+  --bw-lime-alpha: rgba(200,245,52,0.13);
 
+  /* Semantic accents */
   --bw-amber:      #ffc933;
-  --bw-amber-soft: #3a2e05;
-
+  --bw-amber-soft: #372d04;
   --bw-red:        #ff6a5a;
-  --bw-red-soft:   #3a1810;
-
+  --bw-red-soft:   #3a1510;
   --bw-green:      #4cd089;
-  --bw-green-soft: #103a20;
+  --bw-green-soft: #0f381e;
 
-  --bw-on-ink: #0a0a08;
+  /* On-ink — text on bright (ink-colored) backgrounds in dark mode */
+  --bw-on-ink:        #0a0a08;   /* near-black — mirrors light-mode ink */
+  --bw-on-ink-dim:    rgba(10,10,8,0.50);
+  --bw-on-ink-ghost:  rgba(10,10,8,0.08);
+  --bw-on-ink-muted:  rgba(10,10,8,0.62);
+  --bw-on-ink-soft:   rgba(10,10,8,0.68);
+
+  /* Shadows — depth via black + lime glow for brand elements */
+  --bw-shadow-sm:  0 1px 3px rgba(0,0,0,0.30);
+  --bw-shadow-md:  0 4px 16px rgba(0,0,0,0.44), 0 1px 4px rgba(0,0,0,0.24);
+  --bw-shadow-lg:  0 14px 36px rgba(0,0,0,0.54), 0 3px 8px rgba(0,0,0,0.30);
+  --bw-shadow-fab: 0 6px 22px rgba(175,235,30,0.22), 0 2px 6px rgba(0,0,0,0.52);
+
+  /* Hero card — elevated dark so it stays premium in dark mode */
+  --bw-hero-bg: var(--bw-elevated);
+
+  /* Focus ring */
+  --bw-ring-lime: rgba(200,245,52,0.28);
 }
 
 /* ── Base ──────────────────────────────────────────────────── */
@@ -116,13 +162,46 @@ body {
   background: var(--bw-bg);
   color: var(--bw-ink);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.01em;
-  transition: background-color 200ms ease, color 200ms ease;
+}
+
+/* ── Theme transition ──────────────────────────────────────── */
+/*
+  Applied broadly but only to color-related properties.
+  Excludes elements mid-animation so keyframes run uninterrupted.
+*/
+:root {
+  --bw-theme-duration: 230ms;
+  --bw-theme-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body,
+aside, header, nav, main, section, footer,
+input, button, a, span, div, svg {
+  transition:
+    background-color var(--bw-theme-duration) var(--bw-theme-ease),
+    border-color     var(--bw-theme-duration) var(--bw-theme-ease),
+    color            calc(var(--bw-theme-duration) - 20ms) var(--bw-theme-ease),
+    box-shadow       var(--bw-theme-duration) var(--bw-theme-ease);
+}
+
+/* Preserve animation freedom — don't let theme transition interfere */
+.animate-fade-slide-up,
+.animate-fade-in,
+.animate-shake,
+.animate-spin-in,
+.animate-count-up,
+.theme-icon,
+.theme-icon *,
+.icon-m,
+.icon-m * {
+  transition: none !important;
 }
 
 /* ── Animations ────────────────────────────────────────────── */
 @keyframes fadeSlideUp {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes fadeIn {
@@ -143,8 +222,8 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.animate-fade-slide-up { animation: fadeSlideUp 0.4s ease both; }
-.animate-fade-in       { animation: fadeIn 0.3s ease both; }
+.animate-fade-slide-up { animation: fadeSlideUp 0.38s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-fade-in       { animation: fadeIn 0.28s ease both; }
 .animate-shake         { animation: shakeInput 0.4s ease; }
 .animate-spin-in       { animation: spinIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 .animate-count-up      { animation: countUp 0.5s ease both; }
@@ -156,7 +235,17 @@ body {
   letter-spacing: -0.02em;
 }
 
-/* scrollbar */
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--bw-border-strong); border-radius: 999px; }
+/* ── Focus rings ───────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--bw-ring-lime);
+  outline-offset: 2px;
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────── */
+::-webkit-scrollbar              { width: 4px; height: 4px; }
+::-webkit-scrollbar-track        { background: transparent; }
+::-webkit-scrollbar-thumb        { background: var(--bw-border-strong); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover  { background: var(--bw-ink-3); }
+
+.bw-dark ::-webkit-scrollbar-thumb       { background: var(--bw-lime-alpha); }
+.bw-dark ::-webkit-scrollbar-thumb:hover { background: rgba(200,245,52,0.28); }

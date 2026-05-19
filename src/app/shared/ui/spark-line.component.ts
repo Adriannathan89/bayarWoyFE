@@ -28,7 +28,7 @@ import { CommonModule } from '@angular/common';
 })
 export class SparkLineComponent implements OnChanges {
   @Input() data: number[] = [];
-  @Input() color = '#b5e60e';
+  @Input() color = 'currentColor';
   @Input() height = 80;
   @Input() width = 320;
 

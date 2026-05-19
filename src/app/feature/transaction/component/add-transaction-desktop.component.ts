@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject, HostListener } from '@angular/core';
+﻿import { Component, OnInit, signal, inject, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -49,14 +49,14 @@ const CATEGORIES = [
       cursor: pointer; transition: background 0.15s, border-color 0.15s;
       text-align: left;
     }
-    .type-tile.sel { background: var(--bw-ink); color: var(--bw-on-ink); border-color: var(--bw-ink); }
+    .type-tile.sel { background: var(--bw-lime-alpha); border-color: var(--bw-lime); }
     .quick-chip {
       padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 600;
       background: var(--bw-surface); color: var(--bw-ink-2);
       border: 1px solid var(--bw-border); cursor: pointer;
       transition: background 0.12s, color 0.12s, border-color 0.12s;
     }
-    .quick-chip.sel { background: var(--bw-ink); color: var(--bw-lime); border-color: var(--bw-ink); }
+    .quick-chip.sel { background: var(--bw-ink); color: var(--bw-on-ink); border-color: var(--bw-ink); }
     .cat-chip {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 8px 12px; border-radius: 999px; font-size: 13px; font-weight: 600;
@@ -64,7 +64,7 @@ const CATEGORIES = [
       cursor: pointer; transition: background 0.12s, color 0.12s;
       border: 1px solid transparent;
     }
-    .cat-chip.sel { background: var(--bw-ink); color: var(--bw-lime); }
+    .cat-chip.sel { background: var(--bw-ink); color: var(--bw-on-ink); }
     .bw-input {
       width: 100%; font-family: inherit; font-size: 15px;
       padding: 14px 16px; border-radius: var(--bw-r-md);
@@ -86,8 +86,8 @@ const CATEGORIES = [
             <button type="button" class="type-tile" [class.sel]="selectedType() === t.id"
                     (click)="selectedType.set(t.id)">
               <div class="w-9 h-9 rounded-[10px] flex items-center justify-center"
-                   [style.background]="selectedType() === t.id ? t.accent : 'var(--bw-sunken)'"
-                   [style.color]="selectedType() === t.id ? 'var(--bw-ink)' : t.accent">
+                   [style.background]="selectedType() === t.id ? t.softAccent : 'var(--bw-sunken)'"
+                   [style.color]="t.accent">
                 @if (t.id === 'expense') {
                   <svg lucideArrowUp class="w-[18px] h-[18px]" style="stroke-width:2.4"></svg>
                 } @else if (t.id === 'income') {
@@ -115,7 +115,7 @@ const CATEGORIES = [
           <!-- Hidden input for keyboard entry -->
           <input type="text" inputmode="numeric" class="sr-only"
             [value]="rawAmount()" (input)="onAmountInput($event)" />
-          <div class="flex gap-2 justify-center mt-3 flex-wrap">
+          <div class="flex gap-2 justify-center mt-8 flex-wrap">
             @for (q of quickAmounts; track q.value) {
               <button type="button" class="quick-chip" [class.sel]="rawAmount() === q.value"
                       (click)="rawAmount.set(q.value)">{{ q.label }}</button>
@@ -196,9 +196,9 @@ export class AddTransactionDesktopSubPage implements OnInit {
   private snackBar = inject(MatSnackBar);
 
   readonly txTypes = [
-    { id: 'income'  as TxType, label: 'Pemasukan',      accent: 'var(--bw-green)' },
-    { id: 'expense' as TxType, label: 'Pengeluaran',    accent: 'var(--bw-red)' },
-    { id: 'debt'    as TxType, label: 'Hutang/Piutang', accent: 'var(--bw-amber)' },
+    { id: 'income'  as TxType, label: 'Pemasukan',      accent: 'var(--bw-green)',  softAccent: 'var(--bw-green-soft)' },
+    { id: 'expense' as TxType, label: 'Pengeluaran',    accent: 'var(--bw-red)',    softAccent: 'var(--bw-red-soft)' },
+    { id: 'debt'    as TxType, label: 'Hutang/Piutang', accent: 'var(--bw-amber)',  softAccent: 'var(--bw-amber-soft)' },
   ];
   readonly quickAmounts = QUICK_AMOUNTS;
   readonly categories = CATEGORIES;

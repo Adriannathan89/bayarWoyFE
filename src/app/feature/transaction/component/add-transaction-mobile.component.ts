@@ -40,7 +40,7 @@ const CATEGORIES = [
       display: flex; flex-direction: column; align-items: center; gap: 6px;
       cursor: pointer; transition: background 0.12s, border-color 0.12s;
     }
-    .type-tile.sel { background: var(--bw-ink); border-color: var(--bw-ink); color: var(--bw-on-ink); }
+    .type-tile.sel { background: var(--bw-lime-alpha); border-color: var(--bw-lime); }
     .numpad-btn {
       aspect-ratio: 1; border-radius: 14px;
       background: var(--bw-elevated); color: var(--bw-ink);
@@ -59,7 +59,7 @@ const CATEGORIES = [
       cursor: pointer; flex-shrink: 0;
       transition: background 0.12s, color 0.12s;
     }
-    .cat-chip.sel { background: var(--bw-ink); color: var(--bw-lime); }
+    .cat-chip.sel { background: var(--bw-ink); color: var(--bw-on-ink); }
     .bw-input {
       width: 100%; font-family: inherit; font-size: 15px;
       padding: 14px 16px; border-radius: 12px;
@@ -84,8 +84,8 @@ const CATEGORIES = [
               <button type="button" class="type-tile" [class.sel]="selectedType() === t.id"
                       (click)="selectedType.set(t.id)">
                 <div class="w-8 h-8 rounded-[8px] flex items-center justify-center"
-                     [style.background]="selectedType() === t.id ? t.accent : 'var(--bw-sunken)'"
-                     [style.color]="selectedType() === t.id ? 'var(--bw-ink)' : t.accent">
+                     [style.background]="selectedType() === t.id ? t.softAccent : 'var(--bw-sunken)'"
+                     [style.color]="t.accent">
                   @if (t.id === 'expense') {
                     <svg lucideArrowUp class="w-4 h-4" style="stroke-width:2.4"></svg>
                   } @else if (t.id === 'income') {
@@ -94,8 +94,7 @@ const CATEGORIES = [
                     <svg lucideUsers class="w-4 h-4" style="stroke-width:2.4"></svg>
                   }
                 </div>
-                <span class="text-[12px] font-bold leading-tight text-center"
-                      [style.color]="selectedType() === t.id ? 'var(--bw-on-ink)' : 'var(--bw-ink-2)'">
+                <span class="text-[12px] font-bold leading-tight text-center text-bw-ink-2">
                   {{ t.label }}
                 </span>
               </button>
@@ -214,9 +213,9 @@ export class AddTransactionMobileSubPage {
   private snackBar = inject(MatSnackBar);
 
   readonly txTypes = [
-    { id: 'income'  as TxType, label: 'Pemasukan',   accent: 'var(--bw-green)' },
-    { id: 'expense' as TxType, label: 'Pengeluaran', accent: 'var(--bw-red)' },
-    { id: 'debt'    as TxType, label: 'Hutang',      accent: 'var(--bw-amber)' },
+    { id: 'income'  as TxType, label: 'Pemasukan',   accent: 'var(--bw-green)',  softAccent: 'var(--bw-green-soft)' },
+    { id: 'expense' as TxType, label: 'Pengeluaran', accent: 'var(--bw-red)',    softAccent: 'var(--bw-red-soft)' },
+    { id: 'debt'    as TxType, label: 'Hutang',      accent: 'var(--bw-amber)',  softAccent: 'var(--bw-amber-soft)' },
   ];
   readonly categories = CATEGORIES;
 

@@ -12,14 +12,14 @@ import { LucideHouse, LucideReceipt, LucidePlus, LucideUsers, LucideWallet } fro
       width: 56px; height: 56px; border-radius: 18px; margin-top: -22px;
       background: var(--bw-ink); color: var(--bw-lime);
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 8px 18px rgba(10,10,8,0.25);
+      box-shadow: var(--bw-shadow-fab);
       border: none; cursor: pointer;
       transition: transform 0.12s ease, opacity 0.12s;
     }
     .fab:active { transform: scale(0.95); }
   `],
   template: `
-    <nav class="flex items-center justify-around bg-bw-surface border-t border-bw-border pb-[env(safe-area-inset-bottom,16px)] pt-2.5 px-3">
+    <nav class="flex flex md:hidden fixed bottom-0 left-0 right-0 z-50 items-center justify-around bg-bw-surface border-t border-bw-border pb-[env(safe-area-inset-bottom,16px)] pt-2.5 px-3">
 
       <a [routerLink]="'/dashboard'" routerLinkActive #home="routerLinkActive"
         class="flex flex-col items-center gap-1 px-2.5 py-1 cursor-pointer no-underline"
