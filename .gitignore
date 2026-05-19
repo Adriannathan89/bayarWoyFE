@@ -12,6 +12,8 @@ src/environments
 /node_modules
 npm-debug.log
 yarn-error.log
+.claude
+docs
 
 # IDEs and editors
 .idea/
@@ -21,6 +23,7 @@ yarn-error.log
 *.launch
 .settings/
 *.sublime-workspace
+.superpowers
 
 # Visual Studio Code
 .vscode/*
@@ -44,3 +47,4 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+.gitignore

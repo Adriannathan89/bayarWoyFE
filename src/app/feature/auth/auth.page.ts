@@ -1,155 +1,152 @@
-import { Component } from "@angular/core";
+import { Component, ChangeDetectorRef } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { UserAuthService } from "../../core/service/user/user-auth.service";
 import { UserRegisterService } from "../../core/service/user/user-register.service";
 import { Router } from "@angular/router";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { ChangeDetectorRef } from "@angular/core";
 
 @Component({
-    standalone: true,
-    imports: [ReactiveFormsModule],
-    template: `
-        <div class="flex items-center justify-center w-full h-screen">
-            <div class="max-sm:w-[480px] max-md:w-[340px] max-xl:w-[420px] xl:w-[480px] h-[600px] bg-primary-color rounded-tl-2xl rounded-bl-2xl p-8 shadow-md">
-                <div class="w-full flex justify-center pt-4">
-                    <h1 class="text-3xl font-bold mb-4">@if (isLogin) { Login } @else { Register }</h1>
-                </div>
-                <form [formGroup]="authForm" (ngSubmit)="handleSubmit()" 
-                class="flex flex-col gap-6 justify-center h-[460px]"
-                >
-                    <div class="flex flex-col gap-[8px]">
-                        <p>Username:</p>
-                        <input
-                            type="text"
-                            formControlName="username"
-                            class="w-full rounded-xl p-2 border border-secondary-color focus:outline-none"
-                        />
-                    </div>
-
-                    <div class="flex flex-col gap-[8px]">
-                        <p>Password:</p>
-                        <input
-                            type="password"
-                            formControlName="password"
-                            class="w-full rounded-xl p-2 border border-secondary-color focus:outline-none"
-                        />
-                    </div>
-
-                    @if (!isLogin) {
-                    <div class="flex flex-col gap-[32px]">
-                        <div class="flex flex-col gap-[8px]">
-                            <p>Repeat password:</p>
-                            <input
-                                type="password"
-                                formControlName="repeatPassword"
-                                class="w-full rounded-xl p-2 border border-secondary-color focus:outline-none"
-                            />
-                        </div>
-                    </div>
-                    }
-
-                    <div class="sm:hidden text-neutral-color">
-                        <button 
-                        type="button"
-                        class="ml-[4px] cursor-pointer" 
-                        (click)="toggleLogin()">{{ isLogin ? "Don't have an account?" : "Already have an account?" }}</button>
-                    </div>
-
-                    <button
-                        type="submit"
-                        class="cursor-pointer rounded-xl px-4 py-2 font-semibold text-text-card-color disabled:opacity-60 disabled:cursor-not-allowed
-                        {{ !canSubmit ? 'bg-secondary-color' : 'bg-button-color' }}"
-                        [disabled]="isSubmitting || !canSubmit"
-                    >
-                        {{ (isLogin ? 'Login' : 'Register') }}
-                    </button>
-                </form>
-            </div>
-            <div class="max-sm:hidden max-md:w-[340px] max-xl:w-[420px] xl:w-[480px] h-[600px] bg-card-color rounded-tr-2xl rounded-br-2xl p-8 shadow-md flex flex-col items-center justify-center gap-[16px] text-text-card-color">
-                <p>Welcome to Bayar Woy Coek</p>
-                <div class="w-full flex flex-col items-center gap-[12px]">
-                @if (isLogin) {
-                    <p>Don't have an account?</p>
-                    <button type="button" class="cursor-pointer bg-transparent w-[160px] py-1 px-3 border-1 rounded-full text-text-card-color hover:bg-transparent/90" (click)="toggleLogin()">Register here</button>
-                } @else {
-                    <p>Already have an account?</p>
-                    <button type="button" class="cursor-pointer bg-transparent w-[160px] py-1 px-3 border-1 rounded-full text-text-card-color hover:bg-transparent/90" (click)="toggleLogin()">Login here</button>
-                }
-                </div>
-            </div>
+  standalone: true,
+  imports: [ReactiveFormsModule],
+  template: `
+    <div class="flex items-center justify-center w-full h-screen animate-fade-slide-up">
+      <div class="max-sm:w-[480px] max-md:w-[340px] max-xl:w-[420px] xl:w-[480px] h-[600px] bg-primary-color rounded-tl-2xl rounded-bl-2xl p-8 shadow-md">
+        <div class="w-full flex justify-center pt-4">
+          <h1 class="text-3xl font-bold mb-4">@if (isLogin) { Login } @else { Register }</h1>
         </div>
-    `
+        <form
+          [formGroup]="authForm"
+          (ngSubmit)="handleSubmit()"
+          class="flex flex-col gap-6 justify-center h-[460px]"
+          [class.animate-shake]="hasError"
+        >
+          <div class="flex flex-col gap-[8px]">
+            <p>Username:</p>
+            <input
+              type="text"
+              formControlName="username"
+              class="w-full rounded-xl p-2 border border-secondary-color focus:outline-none focus:border-card-color focus:ring-1 focus:ring-card-color"
+            />
+          </div>
+
+          <div class="flex flex-col gap-[8px]">
+            <p>Password:</p>
+            <input
+              type="password"
+              formControlName="password"
+              class="w-full rounded-xl p-2 border border-secondary-color focus:outline-none focus:border-card-color focus:ring-1 focus:ring-card-color"
+            />
+          </div>
+
+          @if (!isLogin) {
+            <div class="flex flex-col gap-[32px]">
+              <div class="flex flex-col gap-[8px]">
+                <p>Repeat password:</p>
+                <input
+                  type="password"
+                  formControlName="repeatPassword"
+                  class="w-full rounded-xl p-2 border border-secondary-color focus:outline-none focus:border-card-color focus:ring-1 focus:ring-card-color"
+                />
+              </div>
+            </div>
+          }
+
+          <div class="sm:hidden text-neutral-color">
+            <button
+              type="button"
+              class="ml-[4px] cursor-pointer"
+              (click)="toggleLogin()">{{ isLogin ? "Don't have an account?" : "Already have an account?" }}</button>
+          </div>
+
+          <button
+            type="submit"
+            class="cursor-pointer rounded-xl px-4 py-2 font-semibold text-text-card-color disabled:opacity-60 disabled:cursor-not-allowed bg-button-color transition-opacity"
+            [disabled]="isSubmitting || !canSubmit"
+          >
+            {{ isLogin ? 'Login' : 'Register' }}
+          </button>
+        </form>
+      </div>
+      <div class="max-sm:hidden max-md:w-[340px] max-xl:w-[420px] xl:w-[480px] h-[600px] bg-card-color rounded-tr-2xl rounded-br-2xl p-8 shadow-md flex flex-col items-center justify-center gap-[16px] text-text-card-color">
+        <p>Welcome to Bayar Woy Coek</p>
+        <div class="w-full flex flex-col items-center gap-[12px]">
+          @if (isLogin) {
+            <p>Don't have an account?</p>
+            <button type="button" class="cursor-pointer bg-transparent w-[160px] py-1 px-3 border-1 rounded-full text-text-card-color hover:bg-transparent/90" (click)="toggleLogin()">Register here</button>
+          } @else {
+            <p>Already have an account?</p>
+            <button type="button" class="cursor-pointer bg-transparent w-[160px] py-1 px-3 border-1 rounded-full text-text-card-color hover:bg-transparent/90" (click)="toggleLogin()">Login here</button>
+          }
+        </div>
+      </div>
+    </div>
+  `
 })
 export class AuthPage {
-    isLogin = true;
-    isSubmitting = false;
-    authForm;
+  isLogin = true;
+  isSubmitting = false;
+  hasError = false;
+  authForm;
 
-    constructor(
-        private fb: FormBuilder, 
-        private registerService: UserRegisterService, 
-        private authService: UserAuthService, 
-        private router: Router,
-        private snackBar: MatSnackBar,
-        private cdr: ChangeDetectorRef
-    ){
-        this.authForm = this.fb.nonNullable.group({
-            username: ['', [Validators.required, Validators.minLength(3)]],
-            password: ['', [Validators.required, Validators.minLength(6)]],
-            repeatPassword: ['']
-        });
-    }
+  constructor(
+    private fb: FormBuilder,
+    private registerService: UserRegisterService,
+    private authService: UserAuthService,
+    private router: Router,
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
+  ) {
+    this.authForm = this.fb.nonNullable.group({
+      username: ['', [Validators.required, Validators.minLength(3)]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      repeatPassword: ['']
+    });
+  }
 
-    toggleLogin() {
-        this.isLogin = !this.isLogin;
-    }
+  toggleLogin() {
+    this.isLogin = !this.isLogin;
+  }
 
-    get canSubmit() {
-        return this.authForm.valid && (this.isLogin || this.authForm.value.password === this.authForm.value.repeatPassword);
-    }
+  get canSubmit() {
+    return this.authForm.valid && (this.isLogin || this.authForm.value.password === this.authForm.value.repeatPassword);
+  }
 
-    async handleSubmit() {
-        if (this.authForm.invalid) {
-            return;
+  async handleSubmit() {
+    if (this.authForm.invalid) return;
+
+    const { username, password } = this.authForm.value;
+
+    if (this.isLogin) {
+      try {
+        this.isSubmitting = true;
+        const success = await this.authService.login(String(username), String(password));
+        if (success) {
+          localStorage.setItem('username', String(username));
+          this.router.navigate(['/dashboard']);
         }
-
-        const { username, password } = this.authForm.value;
-
-        if (this.isLogin) {
-            try {
-                this.isSubmitting = true;
-                const success = await this.authService.login(String(username), String(password));
-
-                if (success) {
-                    localStorage.setItem('username', String(username));
-                    this.router.navigate(['/dashboard']);
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                this.snackBar.open('Login failed. Please check your credentials and try again.', 'Close', {
-                    duration: 3000,
-                });
-            } finally {
-                this.isSubmitting = false;
-                this.cdr.detectChanges();
-            }
-
-        } else {
-            this.isSubmitting = true;
-            try {
-                const success = await this.registerService.register(String(username), String(password));
-                if (success) {
-                    this.isLogin = true;
-                    this.authForm.reset();
-                }
-            } catch (error) {
-                this.snackBar.open('Registration failed. Please try again.', 'Close', {
-                    duration: 3000,
-                });
-            } finally {
-                this.isSubmitting = false;
-            }
+      } catch (error) {
+        this.hasError = true;
+        setTimeout(() => { this.hasError = false; this.cdr.detectChanges(); }, 500);
+        this.snackBar.open('Login failed. Please check your credentials and try again.', 'Close', { duration: 3000 });
+      } finally {
+        this.isSubmitting = false;
+        this.cdr.detectChanges();
+      }
+    } else {
+      this.isSubmitting = true;
+      try {
+        const success = await this.registerService.register(String(username), String(password));
+        if (success) {
+          this.isLogin = true;
+          this.authForm.reset();
         }
+      } catch (error) {
+        this.hasError = true;
+        setTimeout(() => { this.hasError = false; this.cdr.detectChanges(); }, 500);
+        this.snackBar.open('Registration failed. Please try again.', 'Close', { duration: 3000 });
+      } finally {
+        this.isSubmitting = false;
+      }
     }
+  }
 }

@@ -1,80 +1,31 @@
 import { Injectable } from "@angular/core";
-import { viteEnv } from "../../../../environments/environment.generated";
-
+import axiosInstance from "../../lib/axios";
 
 export type Friend = {
-    id: string;
-    username: string;
-    status: string;
+  id: string;
+  username: string;
+  status: string;
 }
 
-@Injectable({
-    providedIn: "root"
-})
+@Injectable({ providedIn: "root" })
 export class FriendService {
-    private readonly apiBaseUrl = viteEnv.VITE_API_BASE_URL;
+  async getFriend() {
+    const res = await axiosInstance.get('/user/friend');
+    if (res.data.data === null) return [];
+    return res.data.data.map((friend: any) => ({
+      id: friend.id,
+      username: friend.username,
+      status: friend.status
+    })) as Friend[];
+  }
 
-    async getFriend() {
-        const connectionURL = `${this.apiBaseUrl}/user/friend`;
-
-        const res = await fetch(connectionURL, {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if(!res.ok) {
-            throw new Error('Failed to get friends');
-        }
-
-        const json = await res.json();
-
-        if(json.data === null) {
-            return [];
-        }
-
-        const data: Friend[] = json.data.map((friend: any) => ({
-            id: friend.id,
-            username: friend.username,
-            status: friend.status
-        }));
-
-        return data;
-    }
-
-    async searchFriend(keyword: string) {
-        const connectionURL = `${this.apiBaseUrl}/user/friend/search`;
-        const body = {
-            name: keyword
-        }
-
-        const res = await fetch(connectionURL, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-        });
-
-        if(!res.ok) {
-            throw new Error('Failed to search friends');
-        }
-
-        const json = await res.json();
-        
-        if(json.data === null) {
-            return [];
-        }
-
-        const data: Friend[] = json.data.map((friend: any) => ({
-            id: friend.id,
-            username: friend.username,
-            status: friend.status
-        }));
-
-        return data;
-    }
+  async searchFriend(keyword: string) {
+    const res = await axiosInstance.post('/user/friend/search', { name: keyword });
+    if (res.data.data === null) return [];
+    return res.data.data.map((friend: any) => ({
+      id: friend.id,
+      username: friend.username,
+      status: friend.status
+    })) as Friend[];
+  }
 }
