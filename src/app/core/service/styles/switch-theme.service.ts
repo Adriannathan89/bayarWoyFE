@@ -35,6 +35,6 @@ export class SwithTheme {
     }
 
     private applyTheme(): void {
-        document.documentElement.classList.toggle('dark', this.isDark);
+        document.documentElement.classList.toggle('bw-dark', this.isDark);
     }
 }

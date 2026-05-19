@@ -1,183 +1,300 @@
-import { Component, ChangeDetectorRef } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { ReactiveFormsModule, FormBuilder, Validators } from "@angular/forms";
-import { UserRecordsService } from "../../../core/service/user/user-records.service";
-import { Router } from "@angular/router";
-import { MatSnackBar } from "@angular/material/snack-bar";
+import { Component, signal, inject } from '@angular/core';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import {
+  LucideArrowUp, LucideArrowDown, LucideUsers, LucideCheck,
+  LucideUtensils, LucideCoffee, LucideCar,
+  LucideShoppingBag, LucideFilm, LucideGift, LucideFlag,
+  LucideDelete,
+} from '@lucide/angular';
+import { UserRecordsService } from '../../../core/service/user/user-records.service';
+
+type TxType = 'expense' | 'income' | 'debt';
+
+const CATEGORIES = [
+  { id: 'makanan',   label: 'Makanan',   icon: 'utensils' },
+  { id: 'minum',     label: 'Minum',     icon: 'coffee' },
+  { id: 'transport', label: 'Transport', icon: 'car' },
+  { id: 'belanja',   label: 'Belanja',   icon: 'bag' },
+  { id: 'hiburan',   label: 'Hiburan',   icon: 'film' },
+  { id: 'hadiah',    label: 'Hadiah',    icon: 'gift' },
+  { id: 'lainnya',   label: 'Lainnya',   icon: 'flag' },
+];
 
 @Component({
-  standalone: true,
   selector: 'app-add-transaction-mobile',
-  imports: [ReactiveFormsModule, CommonModule],
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    LucideArrowUp, LucideArrowDown, LucideUsers, LucideCheck,
+    LucideUtensils, LucideCoffee, LucideCar,
+    LucideShoppingBag, LucideFilm, LucideGift, LucideFlag,
+    LucideDelete,
+  ],
+  styles: [`
+    :host { display: block; }
+    .type-tile {
+      flex: 1; padding: 12px 8px; border-radius: 12px;
+      border: 1px solid var(--bw-border); background: var(--bw-surface);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      cursor: pointer; transition: background 0.12s, border-color 0.12s;
+    }
+    .type-tile.sel { background: var(--bw-ink); border-color: var(--bw-ink); color: var(--bw-on-ink); }
+    .numpad-btn {
+      aspect-ratio: 1; border-radius: 14px;
+      background: var(--bw-elevated); color: var(--bw-ink);
+      font-size: 22px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background 0.1s, transform 0.08s;
+      border: none; font-family: var(--bw-font-mono);
+      letter-spacing: -0.02em;
+    }
+    .numpad-btn:active { transform: scale(0.93); background: var(--bw-border); }
+    .numpad-del { background: var(--bw-sunken); }
+    .cat-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 7px 12px; border-radius: 999px; font-size: 13px; font-weight: 600;
+      background: var(--bw-elevated); color: var(--bw-ink-2);
+      cursor: pointer; flex-shrink: 0;
+      transition: background 0.12s, color 0.12s;
+    }
+    .cat-chip.sel { background: var(--bw-ink); color: var(--bw-lime); }
+    .bw-input {
+      width: 100%; font-family: inherit; font-size: 15px;
+      padding: 14px 16px; border-radius: 12px;
+      background: var(--bw-elevated); color: var(--bw-ink);
+      border: 1px solid var(--bw-border); outline: none;
+      transition: border-color .12s, background .12s;
+    }
+    .bw-input:focus { border-color: var(--bw-ink); background: var(--bw-surface); }
+    .bw-input::placeholder { color: var(--bw-ink-3); }
+    .bw-label { font-size: 13px; font-weight: 600; color: var(--bw-ink-2); margin-bottom: 8px; display: block; }
+  `],
   template: `
-    <div class="w-full h-full flex flex-col bg-background-color rounded-lg shadow-lg">
-      <div class="bg-card-color text-text-card-color px-6 py-6 flex items-center justify-between shadow-lg">
-        <div>
-          <h1 class="text-2xl font-bold">Transaksi Baru</h1>
-          <p class="opacity-75 text-sm">{{ phase_1 ? 'Masukkan Jumlah' : 'Detail Transaksi' }}</p>
-        </div>
-        <button type="button" *ngIf="!phase_1" (click)="nextPhase()" class="bg-card-color hover:opacity-80 p-2 rounded-full transition text-text-card-color">
-          ←
-        </button>
-      </div>
+    <div class="flex flex-col h-full">
 
-      <form
-        [formGroup]="transactionForm"
-        class="flex-1 flex flex-col overflow-y-auto p-6"
-        (ngSubmit)="handleSubmit()">
+      <!-- ─ Phase 1: Type + Amount + Numpad ─ -->
+      @if (phase === 1) {
+        <div class="flex flex-col gap-4 px-5 pt-3 pb-4 animate-fade-in">
 
-        <div *ngIf="phase_1" class="flex flex-col h-full animate-fade-in">
-          <div class="bg-primary-color rounded-xl shadow-md p-6 mb-6">
-            <p class="text-text-color text-sm mb-2">Jumlah</p>
-            <p class="text-5xl font-bold text-card-color">{{ transactionForm.get('amount')?.value || '0' }}</p>
+          <!-- Type selector -->
+          <div class="flex gap-2">
+            @for (t of txTypes; track t.id) {
+              <button type="button" class="type-tile" [class.sel]="selectedType() === t.id"
+                      (click)="selectedType.set(t.id)">
+                <div class="w-8 h-8 rounded-[8px] flex items-center justify-center"
+                     [style.background]="selectedType() === t.id ? t.accent : 'var(--bw-sunken)'"
+                     [style.color]="selectedType() === t.id ? 'var(--bw-ink)' : t.accent">
+                  @if (t.id === 'expense') {
+                    <svg lucideArrowUp class="w-4 h-4" style="stroke-width:2.4"></svg>
+                  } @else if (t.id === 'income') {
+                    <svg lucideArrowDown class="w-4 h-4" style="stroke-width:2.4"></svg>
+                  } @else {
+                    <svg lucideUsers class="w-4 h-4" style="stroke-width:2.4"></svg>
+                  }
+                </div>
+                <span class="text-[12px] font-bold leading-tight text-center"
+                      [style.color]="selectedType() === t.id ? 'var(--bw-on-ink)' : 'var(--bw-ink-2)'">
+                  {{ t.label }}
+                </span>
+              </button>
+            }
           </div>
 
-          <div class="flex flex-col justify-center pt-12">
-            <div class="grid grid-cols-3 gap-3">
-              <button
-                type="button"
-                *ngFor="let num of [1,2,3,4,5,6,7,8,9]"
-                (click)="clickNumber(num.toString())"
-                class="bg-primary-color hover:bg-secondary-color cursor-pointer text-text-color font-bold py-6 px-4 rounded-lg shadow-md active:scale-95 transition-all duration-75 text-2xl">
-                {{ num }}
-              </button>
-              <div></div>
-              <button type="button" (click)="clickNumber('0')"
-                class="bg-primary-color hover:bg-secondary-color cursor-pointer text-text-color font-bold py-6 px-4 rounded-lg shadow-md active:scale-95 transition-all duration-75 text-2xl">
-                0
-              </button>
-              <button type="button" (click)="clickNumber('Del')"
-                class="bg-primary-color hover:bg-secondary-color cursor-pointer text-text-color font-bold py-6 px-4 rounded-lg shadow-md active:scale-95 transition-all duration-75 text-2xl">
-                ←
-              </button>
+          <!-- Amount display -->
+          <div class="text-center py-4">
+            <div class="text-[11px] font-semibold uppercase tracking-[0.1em] text-bw-ink-3 mb-2">Jumlah</div>
+            <div class="mono leading-none" style="font-size:52px;font-weight:800;letter-spacing:-0.04em;color:var(--bw-ink)">
+              <span class="text-bw-ink-3" style="font-size:28px">Rp </span>{{ formattedAmount() }}
             </div>
           </div>
 
-          <button type="button" (click)="nextPhase()"
-            class="w-full mt-12 bg-button-color hover:opacity-90 text-text-card-color font-bold py-3 px-4 rounded-lg shadow-lg transition">
-            Lanjutkan
+          <!-- Numpad -->
+          <div class="grid grid-cols-3 gap-2.5 px-2">
+            @for (n of [1,2,3,4,5,6,7,8,9]; track n) {
+              <button type="button" class="numpad-btn" (click)="pressNum(n.toString())">{{ n }}</button>
+            }
+            <button type="button" class="numpad-btn" (click)="pressNum('000')">000</button>
+            <button type="button" class="numpad-btn" (click)="pressNum('0')">0</button>
+            <button type="button" class="numpad-btn numpad-del" (click)="pressNum('del')">
+              <svg lucideDelete class="w-5 h-5" style="stroke-width:1.8"></svg>
+            </button>
+          </div>
+
+          <!-- Next -->
+          <button type="button" (click)="goToPhase2()"
+            class="mx-2 py-4 rounded-[12px] bg-bw-ink text-bw-on-ink text-[15px] font-semibold cursor-pointer hover:opacity-90 transition">
+            Lanjutkan →
           </button>
+
         </div>
+      }
 
-        <div *ngIf="!phase_1" class="flex flex-col gap-4 animate-fade-slide-up">
-          <div class="bg-primary-color rounded-xl p-4 shadow-md">
-            <label class="block text-sm font-semibold text-text-color mb-2">Judul Transaksi</label>
-            <input
-              type="text"
-              placeholder="Contoh: Makan Siang"
-              class="w-full rounded-lg p-3 border-2 border-secondary-color focus:border-card-color focus:ring-1 focus:ring-card-color focus:outline-none transition text-text-color bg-background-color"
-              formControlName="title" />
-          </div>
+      <!-- ─ Phase 2: Details ─ -->
+      @if (phase === 2) {
+        <div class="flex flex-col gap-4 px-5 pt-3 pb-6 animate-fade-slide-up">
 
-          <div class="bg-primary-color rounded-xl p-4 shadow-md">
-            <label class="block text-sm font-semibold text-text-color mb-2">Tipe Transaksi</label>
-            <select
-              class="w-full rounded-lg p-3 border-2 border-secondary-color focus:border-card-color focus:ring-1 focus:ring-card-color focus:outline-none transition bg-background-color text-text-color"
-              formControlName="type">
-              <option class="bg-primary-color" value="" disabled selected>Pilih tipe</option>
-              <option class="bg-primary-color" value="expense">Pengeluaran</option>
-              <option class="bg-primary-color" value="income">Pemasukkan</option>
-            </select>
-          </div>
-
-          <div class="bg-primary-color rounded-xl p-4 shadow-md">
-            <label class="block text-sm font-semibold text-text-color mb-2">Deskripsi (Opsional)</label>
-            <textarea
-              placeholder="Tambahkan catatan"
-              class="w-full rounded-lg p-3 border-2 border-secondary-color focus:border-card-color focus:ring-1 focus:ring-card-color focus:outline-none transition bg-background-color text-text-color"
-              rows="3"
-              formControlName="description"></textarea>
-          </div>
-
-          <div class="bg-primary-color rounded-xl p-4 shadow-md">
-            <label class="block text-sm font-semibold text-text-color mb-2">Orang yang Berhutang</label>
-            <select
-              class="w-full rounded-lg p-3 border-2 border-secondary-color focus:border-card-color focus:ring-1 focus:ring-card-color focus:outline-none transition bg-background-color text-text-color"
-              formControlName="debtor">
-              <option value="" selected>Pilih teman</option>
-            </select>
-          </div>
-
-          <div class="flex gap-3 mt-6">
-            <button type="submit"
-              class="flex-1 bg-button-color hover:opacity-90 text-text-card-color font-bold py-3 px-4 rounded-lg shadow-lg transition">
-              Simpan Transaksi
-            </button>
-            <button type="button" (click)="goBack()"
-              class="flex-1 bg-primary-color hover:opacity-80 text-text-color font-bold py-3 px-4 rounded-lg transition border border-secondary-color">
-              Batal
+          <!-- Amount recap -->
+          <div class="flex items-center justify-between py-3 px-4 rounded-[12px]"
+               style="background:var(--bw-elevated)">
+            <div>
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-bw-ink-3">{{ typeLabel() }}</div>
+              <div class="mono text-[22px] font-bold text-bw-ink leading-tight">
+                Rp {{ formattedAmount() }}
+              </div>
+            </div>
+            <button type="button" (click)="phase = 1"
+              class="text-[13px] font-semibold text-bw-ink-3 hover:text-bw-ink cursor-pointer px-3 py-1.5 rounded-[8px] hover:bg-bw-sunken transition">
+              ← Ubah
             </button>
           </div>
-        </div>
 
-      </form>
+          <!-- Judul -->
+          <div>
+            <label class="bw-label">Judul</label>
+            <input class="bw-input" placeholder="Contoh: Makan siang"
+                   [formControl]="form.controls.title" />
+          </div>
+
+          <!-- Kategori -->
+          <div>
+            <label class="bw-label">Kategori</label>
+            <div class="flex gap-2 overflow-x-auto pb-1" style="scrollbar-width:none">
+              @for (c of categories; track c.id) {
+                <button type="button" class="cat-chip" [class.sel]="selectedCategory() === c.id"
+                        (click)="selectedCategory.set(c.id)">
+                  @if (c.icon === 'utensils') { <svg lucideUtensils class="w-3 h-3"></svg> }
+                  @else if (c.icon === 'coffee') { <svg lucideCoffee class="w-3 h-3"></svg> }
+                  @else if (c.icon === 'car') { <svg lucideCar class="w-3 h-3"></svg> }
+                  @else if (c.icon === 'bag') { <svg lucideShoppingBag class="w-3 h-3"></svg> }
+                  @else if (c.icon === 'film') { <svg lucideFilm class="w-3 h-3"></svg> }
+                  @else if (c.icon === 'gift') { <svg lucideGift class="w-3 h-3"></svg> }
+                  @else { <svg lucideFlag class="w-3 h-3"></svg> }
+                  {{ c.label }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Tanggal -->
+          <div>
+            <label class="bw-label">Tanggal</label>
+            <input class="bw-input" type="date" [formControl]="form.controls.date" />
+          </div>
+
+          <!-- Catatan -->
+          <div>
+            <label class="bw-label">Catatan <span class="text-bw-ink-3 font-normal">(opsional)</span></label>
+            <input class="bw-input" placeholder="Tambahkan catatan…"
+                   [formControl]="form.controls.description" />
+          </div>
+
+          <!-- Save -->
+          <button type="button" (click)="handleSubmit()" [disabled]="saving()"
+            class="flex items-center justify-center gap-2 py-4 rounded-[12px] bg-bw-ink text-bw-on-ink text-[15px] font-semibold cursor-pointer hover:opacity-90 transition disabled:opacity-50 mt-2">
+            <svg lucideCheck class="w-5 h-5 shrink-0"></svg>
+            {{ saving() ? 'Menyimpan…' : 'Simpan Transaksi' }}
+          </button>
+          <button type="button" (click)="goBack()"
+            class="py-3 rounded-[12px] border border-bw-border text-bw-ink-2 text-[14px] font-semibold cursor-pointer hover:bg-bw-sunken transition">
+            Batal
+          </button>
+
+        </div>
+      }
+
     </div>
-  `
+  `,
 })
 export class AddTransactionMobileSubPage {
-  transactionForm;
-  phase_1: boolean = true;
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private recordsService = inject(UserRecordsService);
+  private snackBar = inject(MatSnackBar);
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private recordsService: UserRecordsService,
-    private cdr: ChangeDetectorRef,
-    private snackbar: MatSnackBar
-  ) {
-    this.transactionForm = this.fb.group({
-      title: ['', Validators.required],
-      amount: ['', Validators.required],
-      description: [''],
-      debtor: [''],
-      type: ['', Validators.required]
-    });
+  readonly txTypes = [
+    { id: 'income'  as TxType, label: 'Pemasukan',   accent: 'var(--bw-green)' },
+    { id: 'expense' as TxType, label: 'Pengeluaran', accent: 'var(--bw-red)' },
+    { id: 'debt'    as TxType, label: 'Hutang',      accent: 'var(--bw-amber)' },
+  ];
+  readonly categories = CATEGORIES;
+
+  phase = 1;
+  selectedType = signal<TxType>('income');
+  rawAmount = signal(0);
+  selectedCategory = signal('lainnya');
+  saving = signal(false);
+
+  form = this.fb.group({
+    title: ['', Validators.required],
+    description: [''],
+    date: [this.todayDate()],
+  });
+
+  formattedAmount(): string {
+    const v = this.rawAmount();
+    return v === 0 ? '0' : new Intl.NumberFormat('id-ID').format(v);
   }
 
-  nextPhase() {
-    if (!this.transactionForm.get('amount')?.value) {
-      this.snackbar.open('Masukkan jumlah terlebih dahulu.', 'Tutup', { duration: 2000 });
+  typeLabel(): string {
+    return this.txTypes.find(t => t.id === this.selectedType())?.label ?? '';
+  }
+
+  pressNum(key: string) {
+    if (key === 'del') {
+      const s = String(this.rawAmount()).slice(0, -1);
+      this.rawAmount.set(s ? Number(s) : 0);
       return;
     }
-    this.phase_1 = !this.phase_1;
-    this.cdr.detectChanges();
+    const current = this.rawAmount() === 0 ? '' : String(this.rawAmount());
+    const next = Number(current + key);
+    if (next > 999_999_999) return;
+    this.rawAmount.set(next);
   }
 
-  handleSubmit() {
-    if (this.transactionForm.valid) {
-      const { title, amount, description, debtor, type } = this.transactionForm.value;
-      const formattedAmount = parseInt((amount ?? '0').replace(/,/g, ''), 10);
-      if (isNaN(formattedAmount) || formattedAmount <= 0) {
-        this.snackbar.open('Jumlah tidak valid.', 'Tutup', { duration: 2000 });
-        return;
-      }
-      if (!debtor) {
-        this.recordsService.createRecord(title!, description!, formattedAmount, type!).then(() => {
-          this.snackbar.open('Transaksi berhasil disimpan!', 'Tutup', { duration: 3000 });
-          this.router.navigate(['/transaction']);
-        }).catch(() => {
-          this.snackbar.open('Gagal menyimpan transaksi. Silakan coba lagi.', 'Tutup', { duration: 3000 });
-        });
-      }
+  goToPhase2() {
+    if (this.rawAmount() === 0) {
+      this.snackBar.open('Masukkan jumlah terlebih dahulu.', 'Tutup', { duration: 2000 });
+      return;
+    }
+    this.phase = 2;
+  }
+
+  async handleSubmit() {
+    if (!this.form.controls.title.value?.trim()) {
+      this.snackBar.open('Judul tidak boleh kosong.', 'Tutup', { duration: 2000 });
+      return;
+    }
+    this.saving.set(true);
+    try {
+      const description = [
+        this.selectedCategory() !== 'lainnya'
+          ? this.categories.find(c => c.id === this.selectedCategory())?.label
+          : '',
+        this.form.controls.description.value,
+      ].filter(Boolean).join(' · ');
+
+      await this.recordsService.createRecord(
+        this.form.controls.title.value!.trim(),
+        description,
+        this.rawAmount(),
+        this.selectedType(),
+      );
+      this.snackBar.open('Transaksi tersimpan!', 'Tutup', { duration: 2500 });
+      this.router.navigate(['/transaction']);
+    } catch {
+      this.snackBar.open('Gagal menyimpan. Coba lagi.', 'Tutup', { duration: 3000 });
+    } finally {
+      this.saving.set(false);
     }
   }
 
-  clickNumber(num: string) {
-    const currentValue = this.transactionForm.get('amount')?.value || '';
-    if (num === 'Del') {
-      this.transactionForm.get('amount')?.setValue(currentValue.slice(0, -1));
-    } else {
-      const digits = currentValue.replace(/\D/g, '');
-      if (digits.length >= 12) return;
-      this.transactionForm.get('amount')?.setValue(currentValue + num);
-    }
-    let value = this.transactionForm.get('amount')?.value || '';
-    value = value.replace(/^0+(?=\d)/, '').replace(/\D/g, '');
-    value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    this.transactionForm.get('amount')?.setValue(value);
-  }
+  goBack() { this.router.navigate(['/transaction']); }
 
-  goBack() {
-    this.router.navigate(['/transaction']);
+  private todayDate(): string {
+    const d = new Date();
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().slice(0, 10);
   }
 }

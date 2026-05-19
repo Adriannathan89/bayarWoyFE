@@ -13,6 +13,8 @@ src/environments
 npm-debug.log
 yarn-error.log
 .claude
+*.zip
+design_handoff_bayarwoy_redesign
 docs
 
 # IDEs and editors
