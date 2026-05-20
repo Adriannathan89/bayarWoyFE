@@ -57,7 +57,7 @@ import {
 
         <div>
           <label class="bw-label">Tanggal</label>
-          <input class="bw-input-desktop" type="datetime-local" [formControl]="control('date')" />
+          <input class="bw-input-desktop" type="date" [formControl]="control('date')" />
         </div>
 
         <div>

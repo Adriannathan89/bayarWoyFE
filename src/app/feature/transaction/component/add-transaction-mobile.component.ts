@@ -131,6 +131,7 @@ export class AddTransactionMobileSubPage {
         description,
         this.rawAmount(),
         this.selectedType(),
+        this.form.controls.date.value!,
       );
       this.snackBar.open('Transaksi tersimpan!', 'Tutup', { duration: 2500 });
       this.router.navigate(['/transaction']);

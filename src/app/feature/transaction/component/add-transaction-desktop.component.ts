@@ -147,6 +147,7 @@ export class AddTransactionDesktopSubPage implements OnInit {
         description,
         this.rawAmount(),
         this.selectedType(),
+        this.form.controls.date.value!,
       );
       this.snackBar.open('Transaksi tersimpan!', 'Tutup', { duration: 2500 });
       if (andAgain) {
@@ -172,6 +173,6 @@ export class AddTransactionDesktopSubPage implements OnInit {
   private todayISO(): string {
     const d = new Date();
     d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-    return d.toISOString().slice(0, 16);
+    return d.toISOString().slice(0, 10);
   }
 }
