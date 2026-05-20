@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideArrowUp, LucideArrowDown, LucideArrowRight, LucideUsers, LucideReceipt } from '@lucide/angular';
-import { Record } from '../../../core/model/record.model';
+import { Record } from '../../../../core/model/record.model';
 
 @Component({
   selector: 'app-dashboard-recent-transactions-desktop',

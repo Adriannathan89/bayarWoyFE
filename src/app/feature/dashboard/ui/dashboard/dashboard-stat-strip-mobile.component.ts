@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserRecord } from '../../../core/model/record.model';
+import { UserRecord } from '../../../../core/model/record.model';
 
 @Component({
   selector: 'app-dashboard-stat-strip-mobile',

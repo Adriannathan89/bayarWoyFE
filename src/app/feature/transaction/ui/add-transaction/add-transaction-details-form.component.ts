@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 import {
   LucideUtensils,
   LucideCoffee,
@@ -32,8 +32,8 @@ import {
 
         <div style="grid-column:1/-1">
           <label class="bw-label">Judul</label>
-          <input class="bw-input-desktop" placeholder="Contoh: Makan di restoran"
-                 [formControl]="form.controls.title" />
+             <input class="bw-input-desktop" placeholder="Contoh: Makan di restoran"
+               [formControl]="control('title')" />
         </div>
 
         <div style="grid-column:1/-1">
@@ -57,13 +57,13 @@ import {
 
         <div>
           <label class="bw-label">Tanggal</label>
-          <input class="bw-input-desktop" type="datetime-local" [formControl]="form.controls.date" />
+          <input class="bw-input-desktop" type="datetime-local" [formControl]="control('date')" />
         </div>
 
         <div>
           <label class="bw-label">Catatan <span class="text-bw-ink-3 font-normal">(opsional)</span></label>
-          <input class="bw-input-desktop" placeholder="Misal: bayar patungan…"
-                 [formControl]="form.controls.description" />
+             <input class="bw-input-desktop" placeholder="Misal: bayar patungan…"
+               [formControl]="control('description')" />
         </div>
 
       </div>
@@ -75,4 +75,8 @@ export class AddTransactionDetailsFormComponent {
   @Input() categories: { id: string; label: string; icon: string }[] = [];
   @Input() selectedCategory = 'lainnya';
   @Input() onSelectCategory: (id: string) => void = () => {};
+
+  control(name: 'title' | 'date' | 'description'): FormControl {
+    return this.form.get(name) as FormControl;
+  }
 }

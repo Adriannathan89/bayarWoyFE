@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Record } from '../../../core/model/record.model';
+import { Record } from '../../../../core/model/record.model';
 
 @Component({
   selector: 'app-dashboard-debtors',

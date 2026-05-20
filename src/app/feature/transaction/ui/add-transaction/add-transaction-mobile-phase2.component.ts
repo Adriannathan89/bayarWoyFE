@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 import {
   LucideUtensils,
   LucideCoffee,
@@ -47,8 +47,8 @@ import {
 
       <div>
         <label class="bw-label">Judul</label>
-        <input class="bw-input-mobile" placeholder="Contoh: Makan siang"
-               [formControl]="form.controls.title" />
+         <input class="bw-input-mobile" placeholder="Contoh: Makan siang"
+           [formControl]="control('title')" />
       </div>
 
       <div>
@@ -72,13 +72,13 @@ import {
 
       <div>
         <label class="bw-label">Tanggal</label>
-        <input class="bw-input-mobile" type="date" [formControl]="form.controls.date" />
+        <input class="bw-input-mobile" type="date" [formControl]="control('date')" />
       </div>
 
       <div>
         <label class="bw-label">Catatan <span class="text-bw-ink-3 font-normal">(opsional)</span></label>
-        <input class="bw-input-mobile" placeholder="Tambahkan catatan…"
-               [formControl]="form.controls.description" />
+         <input class="bw-input-mobile" placeholder="Tambahkan catatan…"
+           [formControl]="control('description')" />
       </div>
 
       <button type="button" (click)="onSubmit()" [disabled]="saving"
@@ -105,4 +105,8 @@ export class AddTransactionMobilePhase2Component {
   @Input() onSelectCategory: (id: string) => void = () => {};
   @Input() onSubmit: () => void = () => {};
   @Input() onCancel: () => void = () => {};
+
+  control(name: 'title' | 'date' | 'description'): FormControl {
+    return this.form.get(name) as FormControl;
+  }
 }

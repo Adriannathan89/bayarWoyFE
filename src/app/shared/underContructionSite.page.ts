@@ -1,9 +1,7 @@
 import { Component } from "@angular/core";
-import { HeaderComponent } from "./header.component";
 
 @Component({
     standalone: true,
-    imports: [HeaderComponent],
     template: `
         <div class="w-full h-[980px] flex flex-col gap-4 justify-center items-center">
             <h1 class="text-xl">Under Construction</h1>

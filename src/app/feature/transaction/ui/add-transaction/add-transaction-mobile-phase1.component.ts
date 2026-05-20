@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideArrowUp, LucideArrowDown, LucideUsers, LucideDelete } from '@lucide/angular';
+import { LucideDelete } from '@lucide/angular';
 import { AddTransactionTypePickerMobileComponent } from './add-transaction-type-picker-mobile.component';
 
 type TxType = 'expense' | 'income' | 'debt';
@@ -11,9 +11,6 @@ type TxType = 'expense' | 'income' | 'debt';
   imports: [
     CommonModule,
     AddTransactionTypePickerMobileComponent,
-    LucideArrowUp,
-    LucideArrowDown,
-    LucideUsers,
     LucideDelete,
   ],
   styleUrls: ['./add-transaction.styles.css'],
@@ -35,7 +32,7 @@ type TxType = 'expense' | 'income' | 'debt';
 
       <div class="grid grid-cols-3 gap-2.5 px-2">
         @for (n of numbers; track n) {
-          <button type="button" class="numpad-btn" (click)="onPressNum(String(n))">{{ n }}</button>
+          <button type="button" class="numpad-btn" (click)="onPressNum(n.toString())">{{ n }}</button>
         }
         <button type="button" class="numpad-btn" (click)="onPressNum('000')">000</button>
         <button type="button" class="numpad-btn" (click)="onPressNum('0')">0</button>

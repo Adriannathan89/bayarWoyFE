@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideArrowUp } from '@lucide/angular';
-import { SparkLineComponent } from '../../../shared/ui/spark-line.component';
-import { UserRecord } from '../../../core/model/record.model';
+import { SparkLineComponent } from '../../../../shared/ui/spark-line.component';
+import { UserRecord } from '../../../../core/model/record.model';
 
 @Component({
   selector: 'app-dashboard-hero-mobile',

@@ -21,7 +21,7 @@ interface TxGroup {
           <span class="text-[12px] font-bold text-bw-ink">{{ g.label }}</span>
           <span class="mono text-[11px] font-semibold"
                 [style.color]="g.total < 0 ? 'var(--bw-red)' : 'var(--bw-green)'">
-            {{ g.total < 0 ? '−' : '+' }}Rp {{ formatRupiah(Math.abs(g.total)) }}
+            {{ g.total < 0 ? '−' : '+' }}Rp {{ formatRupiah(abs(g.total)) }}
           </span>
         </div>
         @for (tx of g.items; track tx.id; let i = $index) {
@@ -54,4 +54,6 @@ export class TransactionGroupListMobileComponent {
   @Input() formatRupiah!: (n: number) => string;
   @Input() formatRupiahShort!: (n: number) => string;
   @Input() formatTime!: (dateStr: string) => string;
+
+  abs = (value: number) => Math.abs(value);
 }
