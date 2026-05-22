@@ -10,6 +10,7 @@ import { TransactionGroupListDesktopComponent } from '../ui/transaction/transact
 import { TransactionGroupListMobileComponent } from '../ui/transaction/transaction-group-list-mobile.component';
 import { TransactionMonthlySummaryComponent } from '../ui/transaction/transaction-monthly-summary.component';
 import { TransactionMobileStatsComponent } from '../ui/transaction/transaction-mobile-stats.component';
+import { TransactionPeriodFilterComponent, Period } from '../ui/transaction/transaction-period-filter.component';
 
 type FilterType = 'all' | 'expense' | 'income' | 'debt';
 
@@ -30,6 +31,7 @@ interface TxGroup {
     TransactionGroupListMobileComponent,
     TransactionMonthlySummaryComponent,
     TransactionMobileStatsComponent,
+    TransactionPeriodFilterComponent,
   ],
   template: `
     <!-- ── Desktop layout ──────────────────────────────────── -->
@@ -41,12 +43,16 @@ interface TxGroup {
         <!-- Search + filters -->
         <div class="flex gap-3 items-center flex-wrap">
           <div class="flex-1 min-w-[240px]">
-            <app-transaction-search [(query)]="searchQuery"></app-transaction-search>
+            <app-transaction-search [query]="searchQuery()" (queryChange)="searchQuery.set($event)"></app-transaction-search>
           </div>
           <app-transaction-filter-chips
             [filters]="filters"
             [activeFilter]="activeFilter()"
             (select)="setFilter($event)"
+          />
+          <app-transaction-period-filter
+            [activePeriod]="activePeriod()"
+            (selectPeriod)="setPeriod($event)"
           />
         </div>
 
@@ -72,8 +78,6 @@ interface TxGroup {
 
       <!-- Right: insights -->
       <div class="flex flex-col gap-4">
-
-        <!-- Monthly summary -->
         <app-transaction-monthly-summary
           [totalExpenseMonth]="totalExpenseMonth()"
           [categoryBreakdown]="categoryBreakdown()"
@@ -86,15 +90,21 @@ interface TxGroup {
     <div class="flex flex-col md:hidden px-4 pb-6 pt-2 gap-3">
 
       <!-- Search -->
-      <app-transaction-search [(query)]="searchQuery"></app-transaction-search>
+      <app-transaction-search [query]="searchQuery()" (queryChange)="searchQuery.set($event)"></app-transaction-search>
 
-      <!-- Filter chips horizontal scroll -->
-      <app-transaction-filter-chips
-        variant="mobile"
-        [filters]="filters"
-        [activeFilter]="activeFilter()"
-        (select)="setFilter($event)"
-      />
+      <!-- Filter chips + period filter -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <app-transaction-filter-chips
+          variant="mobile"
+          [filters]="filters"
+          [activeFilter]="activeFilter()"
+          (select)="setFilter($event)"
+        />
+        <app-transaction-period-filter
+          [activePeriod]="activePeriod()"
+          (selectPeriod)="setPeriod($event)"
+        />
+      </div>
 
       <!-- Stats strip -->
       <app-transaction-mobile-stats
@@ -131,7 +141,8 @@ export class TransactionPage implements OnInit {
   private allRecords = signal<UserRecord | null>(null);
 
   activeFilter = signal<FilterType>('all');
-  searchQuery = '';
+  activePeriod = signal<Period>(null);
+  searchQuery = signal<string>('');
 
   readonly filters: { id: FilterType; label: string }[] = [
     { id: 'all',     label: 'Semua' },
@@ -160,10 +171,20 @@ export class TransactionPage implements OnInit {
     ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   });
 
+  private filteredByPeriod = computed<Record[]>(() => {
+    const period = this.activePeriod();
+    const txs = this.flatTx();
+    if (!period) return txs;
+    return txs.filter(t => {
+      const d = new Date(t.createdAt);
+      return d.getMonth() === period.month && d.getFullYear() === period.year;
+    });
+  });
+
   groups = computed<TxGroup[]>(() => {
     const filter = this.activeFilter();
-    const q = this.searchQuery.toLowerCase().trim();
-    let txs = this.flatTx();
+    const q = this.searchQuery().toLowerCase().trim();
+    let txs = this.filteredByPeriod();
     if (filter !== 'all') txs = txs.filter(t => t.type === filter);
     if (q) txs = txs.filter(t => t.title.toLowerCase().includes(q) || t.description?.toLowerCase().includes(q));
 
@@ -223,10 +244,13 @@ export class TransactionPage implements OnInit {
   topCategory = computed(() => this.categoryBreakdown()[0]?.label ?? 'Lainnya');
 
   setFilter(f: FilterType) { this.activeFilter.set(f); }
+  setPeriod(p: Period) { this.activePeriod.set(p); }
   goToAdd() { this.router.navigate(['/transaction/add']); }
 
   emptySubtitle(): string {
-    return this.searchQuery ? 'Coba kata kunci lain' : 'Belum ada transaksi di kategori ini';
+    if (this.searchQuery()) return 'Coba kata kunci lain';
+    if (this.activePeriod()) return 'Belum ada transaksi di periode ini';
+    return 'Belum ada transaksi di kategori ini';
   }
 
   typeLabel = (type: string) =>
@@ -251,6 +275,7 @@ export class TransactionPage implements OnInit {
     const d = new Date(dateStr);
     return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
   };
+
   private dayLabel(d: Date): string {
     const now = new Date();
     const diff = Math.floor((now.getTime() - d.getTime()) / 86400000);

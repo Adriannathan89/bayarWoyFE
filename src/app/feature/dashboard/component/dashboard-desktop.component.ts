@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Record, UserRecord } from '../../../core/model/record.model';
+import { Debt } from '../../../core/model/debt.model';
 import { DashboardHeroDesktopComponent } from '../ui/dashboard/dashboard-hero-desktop.component';
 import { DashboardStatRowDesktopComponent } from '../ui/dashboard/dashboard-stat-row-desktop.component';
 import { DashboardRecentTransactionsDesktopComponent } from '../ui/dashboard/dashboard-recent-transactions-desktop.component';
@@ -51,16 +52,15 @@ import { DashboardTipsCardComponent } from '../ui/dashboard/dashboard-tips-card.
       <!-- ─ Right sidebar ─ -->
       <div class="flex flex-col gap-5">
 
-        <!-- Quick actions -->
         <app-dashboard-quick-actions-desktop
           [goToAddType]="goToAddType"
           [goToFriends]="goToFriends"
         />
 
         <app-dashboard-debtors
-          [debtors]="debtors"
-          [formatDate]="formatDate"
+          [debts]="debts"
           [formatRupiah]="formatRupiah"
+          (pay)="onPayDebt($event)"
         />
 
         <app-dashboard-tips-card />
@@ -75,7 +75,7 @@ export class DashboardDesktopComponent {
   @Input({ required: true }) sparkData!: number[];
   @Input({ required: true }) monthlyTrendLabel!: string;
   @Input({ required: true }) recentTx: Record[] = [];
-  @Input({ required: true }) debtors: Record[] = [];
+  @Input({ required: true }) debts: Debt[] = [];
   @Input({ required: true }) totalIncomeCount!: number;
   @Input({ required: true }) formatRupiah!: (n: number) => string;
   @Input({ required: true }) formatDate!: (dateStr: string) => string;
@@ -83,4 +83,5 @@ export class DashboardDesktopComponent {
   @Input({ required: true }) goToAdd!: () => void;
   @Input({ required: true }) goToAddType!: (type: string) => void;
   @Input({ required: true }) goToFriends!: () => void;
+  @Input({ required: true }) onPayDebt!: (id: string) => void;
 }

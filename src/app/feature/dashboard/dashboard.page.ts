@@ -1,7 +1,10 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserRecordsService } from '../../core/service/user/user-records.service';
+import { DebtService } from '../../core/service/debt/debt.service';
 import { UserRecord, Record } from '../../core/model/record.model';
+import { Debt } from '../../core/model/debt.model';
 import { DashboardDesktopComponent } from './component/dashboard-desktop.component';
 import { DashboardMobileComponent } from './component/dashboard-mobile.component';
 
@@ -16,7 +19,7 @@ import { DashboardMobileComponent } from './component/dashboard-mobile.component
       [sparkData]="sparkData()"
       [monthlyTrendLabel]="monthlyTrendLabel()"
       [recentTx]="recentTx()"
-      [debtors]="debtors()"
+      [debts]="debts()"
       [totalIncomeCount]="totalIncomeCount()"
       [formatRupiah]="formatRupiah"
       [formatDate]="formatDate"
@@ -24,6 +27,7 @@ import { DashboardMobileComponent } from './component/dashboard-mobile.component
       [goToAdd]="goToAdd"
       [goToAddType]="goToAddType"
       [goToFriends]="goToFriends"
+      [onPayDebt]="onPayDebt"
     />
     <app-dashboard-mobile
       [records]="records()"
@@ -41,23 +45,40 @@ import { DashboardMobileComponent } from './component/dashboard-mobile.component
 })
 export class DashboardPage implements OnInit {
   private recordsService = inject(UserRecordsService);
+  private debtService = inject(DebtService);
   private router = inject(Router);
+  private snackBar = inject(MatSnackBar);
 
   records = signal<UserRecord | null>(null);
+  debts = signal<Debt[]>([]);
   loading = signal(true);
 
   readonly currentMonth = new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(new Date());
 
   async ngOnInit() {
     try {
-      const data = await this.recordsService.getRecords();
-      this.records.set(data);
+      const [recordData, debtData] = await Promise.all([
+        this.recordsService.getRecords(),
+        this.debtService.loadAllDebts(),
+      ]);
+      this.records.set(recordData);
+      this.debts.set(debtData.filter(d => d.status === 'pending'));
     } catch {
       // keep null state
     } finally {
       this.loading.set(false);
     }
   }
+
+  onPayDebt = async (debtId: string) => {
+    try {
+      await this.debtService.finishDebt(debtId);
+      this.debts.update(ds => ds.filter(d => d.id !== debtId));
+      this.snackBar.open('Hutang berhasil dilunasi.', 'Tutup', { duration: 3000 });
+    } catch {
+      this.snackBar.open('Gagal melunasi hutang.', 'Tutup', { duration: 3000 });
+    }
+  };
 
   recentTx() {
     const r = this.records();
@@ -68,14 +89,9 @@ export class DashboardPage implements OnInit {
       .slice(0, 5);
   }
 
-  debtors() {
-    return (this.records()?.debts ?? []).slice(0, 3);
-  }
-
   sparkData(): number[] {
     const r = this.records();
     if (!r) return [0, 0, 0, 0, 0, 0, 0];
-    // Build 7-point monthly trend from all records (last 7 months)
     const now = new Date();
     return Array.from({ length: 7 }, (_, i) => {
       const d = new Date(now.getFullYear(), now.getMonth() - (6 - i), 1);
