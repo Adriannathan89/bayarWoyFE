@@ -10,11 +10,12 @@ export type FriendRequest = {
 @Injectable({ providedIn: 'root' })
 export class FriendRequestService {
   async getFriendsRequest() {
-    const res = await axiosInstance.get('/user/friend');
+    const res = await axiosInstance.get('/user/friend/request');
+    if (res.data.data === null) return [];
     return res.data.data.map((request: any) => ({
       id: request.id,
-      senderUsername: request.senderUsername,
-      receiverUsername: request.receiverUsername
+      senderUsername: request.sender.username,
+      receiverUsername: request.receiver.username
     })) as FriendRequest[];
   }
 
@@ -24,7 +25,7 @@ export class FriendRequestService {
   }
 
   async responseFriendRequest(friendRequestId: string, action: 'accept' | 'reject') {
-    await axiosInstance.post('/user/friend/response', { friendRequestId, action });
+    await axiosInstance.put('/user/friend/request/response', { friendRequestId, action });
     return true;
   }
 }

@@ -23,8 +23,10 @@ export const routes: Routes = [
             },
             {
                 path: 'friends',
-                loadComponent: () => import('./shared/underContructionSite.page').then(m => m.UnderConstructionSitePage),
+                loadComponent: () => import('./feature/friends/friends.page').then(m => m.FriendsPage),
             },
+            { path: 'friends/add', redirectTo: 'friends', pathMatch: 'full' },
+            { path: 'friends/requests', redirectTo: 'friends', pathMatch: 'full' },
             {
                 path: 'transaction',
                 loadComponent: () => import('./feature/transaction/index').then(m => m.IndexPage),

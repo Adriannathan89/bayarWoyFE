@@ -23,6 +23,7 @@ export class UserRecordsService {
   async getRecords() {
     const res = await axiosInstance.get('/user/records');
     const data = res.data.data;
+    console.log(data);
     const mappedData: UserRecord = {
       expenses: data.expenses ? data.expenses.map((r: any) => this.mapToUserRecord(r)) : [],
       incomes: data.incomes ? data.incomes.map((r: any) => this.mapToUserRecord(r)) : [],
