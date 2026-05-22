@@ -48,10 +48,8 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 
         <div class="relative z-10">
           <!-- Logo -->
-          <div class="flex items-center gap-2.5 mb-14">
-            <div class="w-9 h-9 rounded-[10px] flex items-center justify-center font-black text-[16px]"
-                 style="background:var(--bw-lime);color:var(--bw-ink)">B</div>
-            <span class="text-[17px] font-bold tracking-[-0.02em]" style="color:var(--bw-on-ink)">BayarWoy</span>
+          <div class="mb-14">
+            <img src="bayarwoy-logo-on-dark.svg" alt="BayarWoy" class="h-8 w-auto" />
           </div>
 
           <!-- Eyebrow -->

@@ -1,7 +1,9 @@
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Friend } from '../../../core/service/friend/friend.service';
 import { FriendRequest } from '../../../core/service/friend/friend-request.service';
+import { Debt } from '../../../core/model/debt.model';
 import { FriendWithBalance } from '../friends.page';
 import { FriendAddDebtModalComponent } from '../ui/friend-add-debt-modal.component';
 
@@ -63,7 +65,7 @@ import { FriendAddDebtModalComponent } from '../ui/friend-add-debt-modal.compone
         </p>
         <div class="flex gap-6 mt-3">
           <div>
-            <p class="text-[11px] opacity-50">Tagihan</p>
+            <p class="text-[11px] opacity-50">Piutang</p>
             <p class="text-[13px] font-semibold text-bw-green">{{ formatRupiah(totalOwedToMe) }}</p>
           </div>
           <div>
@@ -95,11 +97,20 @@ import { FriendAddDebtModalComponent } from '../ui/friend-add-debt-modal.compone
                   </p>
                 </div>
               </div>
-              <button
-                (click)="openAddDebt(fw.friend)"
-                class="px-3 py-1.5 rounded-[var(--bw-r-sm)] text-[12px] font-semibold cursor-pointer border border-bw-border text-bw-ink-2 hover:border-bw-ink transition-colors shrink-0">
-                + Hutang
-              </button>
+              <div class="flex gap-2 shrink-0">
+                @if (fw.iOwe > 0) {
+                  <button
+                    (click)="onBayar(fw)"
+                    class="px-3 py-1.5 rounded-[var(--bw-r-sm)] text-[12px] font-semibold cursor-pointer border border-bw-border text-bw-red hover:bg-bw-red-soft transition-colors">
+                    Bayar
+                  </button>
+                }
+                <button
+                  (click)="openAddDebt(fw.friend)"
+                  class="px-3 py-1.5 rounded-[var(--bw-r-sm)] text-[12px] font-semibold cursor-pointer border border-bw-border text-bw-ink-2 hover:border-bw-ink transition-colors">
+                  + Hutang
+                </button>
+              </div>
             </div>
           }
         </div>
@@ -110,9 +121,11 @@ import { FriendAddDebtModalComponent } from '../ui/friend-add-debt-modal.compone
 })
 export class FriendsMobileComponent {
   private dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
 
   @Input() filteredFriends: FriendWithBalance[] = [];
   @Input() pendingRequests: FriendRequest[] = [];
+  @Input() owedDebts: Debt[] = [];
   @Input() searchQuery = '';
   @Input() totalOwedToMe = 0;
   @Input() totalIOwe = 0;
@@ -121,6 +134,7 @@ export class FriendsMobileComponent {
   @Output() searchChange = new EventEmitter<string>();
   @Output() accept = new EventEmitter<string>();
   @Output() reject = new EventEmitter<string>();
+  @Output() payDebt = new EventEmitter<string>();
 
   formatRupiah = (n: number) => 'Rp ' + Math.abs(n).toLocaleString('id-ID');
 
@@ -129,5 +143,14 @@ export class FriendsMobileComponent {
       data: { friendId: friend.id, friendUsername: friend.username },
       panelClass: 'bw-dialog',
     });
+  }
+
+  onBayar(fw: FriendWithBalance) {
+    const debt = this.owedDebts.find(d => d.ownerId === fw.friend.id);
+    if (!debt) {
+      this.snackBar.open('Tidak ada hutang yang harus dibayar.', 'Tutup', { duration: 3000 });
+      return;
+    }
+    this.payDebt.emit(debt.id);
   }
 }

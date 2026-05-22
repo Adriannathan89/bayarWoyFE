@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" font-family="Plus Jakarta Sans, sans-serif">
+  <title>BayarWoy</title>
+  <rect x="0" y="0" width="64" height="64" rx="14" fill="#0a0a08"></rect>
+  <rect x="6" y="12" width="52" height="32" rx="9" fill="#b5e60e"></rect>
+  <path d="M16 44 L11 56 L26 45 Z" fill="#b5e60e"></path>
+  <text x="32" y="36" text-anchor="middle" font-weight="800" font-size="22" letter-spacing="-1" fill="#0a0a08">woy!</text>
+</svg>

@@ -22,6 +22,7 @@ export type FriendWithBalance = {
     <app-friends-desktop
       [filteredFriends]="filteredFriends()"
       [pendingRequests]="pendingRequests()"
+      [owedDebts]="owedDebts()"
       [searchQuery]="searchQuery()"
       [activeTab]="activeTab()"
       [totalOwedToMe]="totalOwedToMe()"
@@ -31,10 +32,12 @@ export type FriendWithBalance = {
       (tabChange)="activeTab.set($event)"
       (accept)="onAccept($event)"
       (reject)="onReject($event)"
+      (payDebt)="onPayDebt($event)"
     />
     <app-friends-mobile
       [filteredFriends]="filteredFriends()"
       [pendingRequests]="pendingRequests()"
+      [owedDebts]="owedDebts()"
       [searchQuery]="searchQuery()"
       [totalOwedToMe]="totalOwedToMe()"
       [totalIOwe]="totalIOwe()"
@@ -42,6 +45,7 @@ export type FriendWithBalance = {
       (searchChange)="searchQuery.set($event)"
       (accept)="onAccept($event)"
       (reject)="onReject($event)"
+      (payDebt)="onPayDebt($event)"
     />
   `,
 })
@@ -125,6 +129,18 @@ export class FriendsPage implements OnInit {
       this.snackBar.open('Permintaan pertemanan ditolak.', 'Tutup', { duration: 3000 });
     } catch {
       this.snackBar.open('Gagal menolak permintaan.', 'Tutup', { duration: 3000 });
+    }
+  }
+
+  async onPayDebt(debtId: string) {
+    this.owedDebts.update(debts => debts.filter(d => d.id !== debtId));
+    try {
+      await this.debtService.finishDebt(debtId);
+      this.snackBar.open('Hutang berhasil dibayar.', 'Tutup', { duration: 3000 });
+    } catch {
+      const owedDebts = await this.debtService.loadOwedDebts();
+      this.owedDebts.set(owedDebts);
+      this.snackBar.open('Gagal membayar hutang.', 'Tutup', { duration: 3000 });
     }
   }
 }

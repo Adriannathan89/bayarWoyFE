@@ -1,4 +1,4 @@
-import { Component, Inject } from "@angular/core";
+import { Component, Inject, signal, computed } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from "@angular/material/dialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
@@ -22,13 +22,14 @@ export type AddDebtDialogData = {
                 <div class="flex flex-col gap-1.5">
                     <label class="text-[13px] font-semibold text-bw-ink-2">Nominal (Rp)</label>
                     <input
-                        type="number"
-                        formControlName="amount"
+                        type="text"
+                        inputmode="numeric"
+                        [value]="formattedAmount()"
+                        (input)="handleAmountInput($event)"
                         placeholder="0"
                         class="w-full px-4 py-2.5 rounded-[var(--bw-r-md)] border border-bw-border bg-bw-elevated text-bw-ink text-[14px] outline-none focus:border-bw-ink transition-colors"
-                        min="1"
                     />
-                    @if (form.controls.amount.invalid && form.controls.amount.touched) {
+                    @if (rawAmount() === 0 && amountTouched) {
                         <p class="text-[12px] text-bw-red">Nominal harus lebih dari 0</p>
                     }
                 </div>
@@ -55,7 +56,7 @@ export type AddDebtDialogData = {
                     </button>
                     <button
                         type="submit"
-                        [disabled]="form.invalid || submitting"
+                        [disabled]="!canSubmit || submitting"
                         class="px-4 py-2 rounded-[var(--bw-r-md)] text-[13px] font-semibold cursor-pointer disabled:opacity-50"
                         style="background:var(--bw-ink);color:var(--bw-on-ink)">
                         {{ submitting ? 'Menyimpan...' : 'Simpan' }}
@@ -66,8 +67,19 @@ export type AddDebtDialogData = {
     `
 })
 export class FriendAddDebtModalComponent {
-    form;
+    rawAmount = signal(0);
+    amountTouched = false;
     submitting = false;
+    form;
+
+    formattedAmount = computed(() => {
+        const v = this.rawAmount();
+        return v === 0 ? '' : new Intl.NumberFormat('id-ID').format(v);
+    });
+
+    get canSubmit() {
+        return this.rawAmount() > 0 && this.form.controls.description.valid;
+    }
 
     constructor(
         public dialogRef: MatDialogRef<FriendAddDebtModalComponent>,
@@ -77,17 +89,23 @@ export class FriendAddDebtModalComponent {
         private snackBar: MatSnackBar
     ) {
         this.form = this.fb.nonNullable.group({
-            amount: [0, [Validators.required, Validators.min(1)]],
             description: ['', [Validators.required]],
         });
     }
 
+    handleAmountInput(e: Event) {
+        this.amountTouched = true;
+        const raw = (e.target as HTMLInputElement).value.replace(/\D/g, '');
+        this.rawAmount.set(raw ? Math.min(Number(raw), 999_999_999) : 0);
+    }
+
     async submit() {
-        if (this.form.invalid) return;
+        this.amountTouched = true;
+        if (!this.canSubmit) return;
         this.submitting = true;
         try {
-            const { amount, description } = this.form.getRawValue();
-            await this.debtService.createDebt(amount, description, this.data.friendId);
+            const { description } = this.form.getRawValue();
+            await this.debtService.createDebt(this.rawAmount(), description, this.data.friendId);
             this.snackBar.open('Hutang berhasil ditambahkan.', 'Tutup', { duration: 3000 });
             this.dialogRef.close('success');
         } catch {

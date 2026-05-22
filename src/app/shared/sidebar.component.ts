@@ -12,30 +12,19 @@ import { UserAuthService } from '../core/service/user/user-auth.service';
     LucideHouse, LucideReceipt, LucideUsers, LucideLogOut,
   ],
   styles: [`
-    .bw-logo-mark {
-      width: 28px; height: 28px; border-radius: 8px;
-      background: var(--bw-ink); color: var(--bw-lime);
-      display: inline-flex; align-items: center; justify-content: center;
-      font-family: var(--bw-font-mono); font-weight: 700; font-size: 16px;
-      position: relative; flex-shrink: 0;
-    }
-    .bw-logo-mark::after {
-      content: ""; position: absolute; right: -3px; bottom: -3px;
-      width: 10px; height: 10px; border-radius: 50%;
-      background: var(--bw-lime); border: 2px solid var(--bw-bg);
-    }
     .nav-item { transition: background 150ms ease, color 150ms ease; }
     .nav-item:hover:not(.active) { background: var(--bw-sunken); }
+    .logo-dark { display: none; }
+    :host-context(.bw-dark) .logo-dark { display: block; }
+    :host-context(.bw-dark) .logo-light { display: none; }
   `],
   template: `
     <aside class="w-[240px] h-full bg-bw-surface border-r border-bw-border flex flex-col shrink-0">
 
       <!-- Logo -->
-      <div class="flex items-center gap-2.5 px-5 py-6 pb-7">
-        <span class="bw-logo-mark">b</span>
-        <span class="text-[18px] font-extrabold tracking-[-0.04em] text-bw-ink">
-          bayar<span class="text-bw-ink-3">woy</span>
-        </span>
+      <div class="px-5 py-6 pb-7">
+        <img src="bayarwoy-logo.svg" alt="BayarWoy" class="logo-light h-7 w-auto" />
+        <img src="bayarwoy-logo-on-dark.svg" alt="BayarWoy" class="logo-dark h-7 w-auto" />
       </div>
 
       <!-- Nav -->
