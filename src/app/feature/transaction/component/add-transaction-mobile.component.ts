@@ -1,6 +1,6 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserRecordsService } from '../../../core/service/user/user-records.service';
 import { AddTransactionMobilePhase1Component } from '../ui/add-transaction/add-transaction-mobile-phase1.component';
@@ -58,9 +58,10 @@ const CATEGORIES = [
     </div>
   `,
 })
-export class AddTransactionMobileSubPage {
+export class AddTransactionMobileSubPage implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private recordsService = inject(UserRecordsService);
   private snackBar = inject(MatSnackBar);
 
@@ -82,6 +83,13 @@ export class AddTransactionMobileSubPage {
     description: [''],
     date: [this.todayDate()],
   });
+
+  ngOnInit() {
+    const type = this.route.snapshot.queryParamMap.get('type') as TxType | null;
+    if (type && ['income', 'expense', 'debt'].includes(type)) {
+      this.selectedType.set(type);
+    }
+  }
 
   formattedAmount(): string {
     const v = this.rawAmount();

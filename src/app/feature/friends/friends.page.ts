@@ -1,11 +1,15 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { Friend, FriendService } from '../../core/service/friend/friend.service';
 import { FriendRequest, FriendRequestService } from '../../core/service/friend/friend-request.service';
 import { Debt } from '../../core/model/debt.model';
 import { DebtService } from '../../core/service/debt/debt.service';
 import { FriendsDesktopComponent } from './component/friends-desktop.component';
 import { FriendsMobileComponent } from './component/friends-mobile.component';
+import { AddDebtDialogComponent } from './ui/add-debt-dialog.component';
+import { AddDebtSheetComponent } from './ui/add-debt-sheet.component';
 
 export type FriendWithBalance = {
   friend: Friend;
@@ -33,6 +37,7 @@ export type FriendWithBalance = {
       (accept)="onAccept($event)"
       (reject)="onReject($event)"
       (payDebt)="onPayDebt($event)"
+      (addDebt)="onAddDebt($event)"
     />
     <app-friends-mobile
       [filteredFriends]="filteredFriends()"
@@ -46,6 +51,7 @@ export type FriendWithBalance = {
       (accept)="onAccept($event)"
       (reject)="onReject($event)"
       (payDebt)="onPayDebt($event)"
+      (addDebt)="onAddDebt($event)"
     />
   `,
 })
@@ -54,6 +60,8 @@ export class FriendsPage implements OnInit {
   private friendRequestService = inject(FriendRequestService);
   private debtService = inject(DebtService);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
+  private bottomSheet = inject(MatBottomSheet);
 
   friends = signal<Friend[]>([]);
   myDebts = signal<Debt[]>([]);
@@ -141,6 +149,29 @@ export class FriendsPage implements OnInit {
       const owedDebts = await this.debtService.loadOwedDebts();
       this.owedDebts.set(owedDebts);
       this.snackBar.open('Gagal membayar hutang.', 'Tutup', { duration: 3000 });
+    }
+  }
+
+  onAddDebt(friend: Friend) {
+    const isMobile = window.innerWidth < 768;
+    const data = {
+      friendId: friend.id,
+      friendName: friend.username,
+      friendInitial: friend.username.slice(0, 1).toUpperCase(),
+    };
+
+    if (isMobile) {
+      this.bottomSheet.open(AddDebtSheetComponent, {
+        data,
+        panelClass: 'add-debt-sheet-panel',
+      });
+    } else {
+      this.dialog.open(AddDebtDialogComponent, {
+        width: '540px',
+        maxWidth: '92vw',
+        panelClass: 'add-debt-dialog-panel',
+        data,
+      });
     }
   }
 }
