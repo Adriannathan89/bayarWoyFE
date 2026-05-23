@@ -1,11 +1,9 @@
 import { Component, EventEmitter, Input, Output, signal, inject } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Friend } from '../../../core/service/friend/friend.service';
 import { FriendRequest } from '../../../core/service/friend/friend-request.service';
 import { Debt } from '../../../core/model/debt.model';
 import { FriendWithBalance } from '../friends.page';
-import { FriendAddDebtModalComponent } from '../ui/friend-add-debt-modal.component';
 
 @Component({
   selector: 'app-friends-desktop',
@@ -134,7 +132,7 @@ import { FriendAddDebtModalComponent } from '../ui/friend-add-debt-modal.compone
                       @if (openMenuId() === fw.friend.id) {
                         <div class="absolute right-0 top-9 z-10 w-40 rounded-[var(--bw-r-md)] border border-bw-border bg-bw-surface shadow-md">
                           <button
-                            (click)="openAddDebt(fw.friend); toggleMenu(null)"
+                            (click)="addDebt.emit(fw.friend); toggleMenu(null)"
                             class="w-full px-4 py-2.5 text-left text-[13px] text-bw-ink hover:bg-bw-elevated transition-colors rounded-[var(--bw-r-md)] cursor-pointer">
                             + Tambah Hutang
                           </button>
@@ -189,7 +187,6 @@ import { FriendAddDebtModalComponent } from '../ui/friend-add-debt-modal.compone
 })
 export class FriendsDesktopComponent {
   private snackBar = inject(MatSnackBar);
-  private dialog = inject(MatDialog);
 
   @Input() filteredFriends: FriendWithBalance[] = [];
   @Input() pendingRequests: FriendRequest[] = [];
@@ -205,6 +202,7 @@ export class FriendsDesktopComponent {
   @Output() accept = new EventEmitter<string>();
   @Output() reject = new EventEmitter<string>();
   @Output() payDebt = new EventEmitter<string>();
+  @Output() addDebt = new EventEmitter<Friend>();
 
   openMenuId = signal<string | null>(null);
 
@@ -216,13 +214,6 @@ export class FriendsDesktopComponent {
 
   showComingSoon() {
     this.snackBar.open('Fitur segera hadir.', 'Tutup', { duration: 3000 });
-  }
-
-  openAddDebt(friend: Friend) {
-    this.dialog.open(FriendAddDebtModalComponent, {
-      data: { friendId: friend.id, friendUsername: friend.username },
-      panelClass: 'bw-dialog',
-    });
   }
 
   onBayar(fw: FriendWithBalance) {

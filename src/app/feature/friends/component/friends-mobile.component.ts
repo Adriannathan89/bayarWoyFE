@@ -1,11 +1,9 @@
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Friend } from '../../../core/service/friend/friend.service';
 import { FriendRequest } from '../../../core/service/friend/friend-request.service';
 import { Debt } from '../../../core/model/debt.model';
 import { FriendWithBalance } from '../friends.page';
-import { FriendAddDebtModalComponent } from '../ui/friend-add-debt-modal.component';
 
 @Component({
   selector: 'app-friends-mobile',
@@ -106,7 +104,7 @@ import { FriendAddDebtModalComponent } from '../ui/friend-add-debt-modal.compone
                   </button>
                 }
                 <button
-                  (click)="openAddDebt(fw.friend)"
+                  (click)="addDebt.emit(fw.friend)"
                   class="px-3 py-1.5 rounded-[var(--bw-r-sm)] text-[12px] font-semibold cursor-pointer border border-bw-border text-bw-ink-2 hover:border-bw-ink transition-colors">
                   + Hutang
                 </button>
@@ -120,7 +118,6 @@ import { FriendAddDebtModalComponent } from '../ui/friend-add-debt-modal.compone
   `,
 })
 export class FriendsMobileComponent {
-  private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
 
   @Input() filteredFriends: FriendWithBalance[] = [];
@@ -135,15 +132,9 @@ export class FriendsMobileComponent {
   @Output() accept = new EventEmitter<string>();
   @Output() reject = new EventEmitter<string>();
   @Output() payDebt = new EventEmitter<string>();
+  @Output() addDebt = new EventEmitter<Friend>();
 
   formatRupiah = (n: number) => 'Rp ' + Math.abs(n).toLocaleString('id-ID');
-
-  openAddDebt(friend: Friend) {
-    this.dialog.open(FriendAddDebtModalComponent, {
-      data: { friendId: friend.id, friendUsername: friend.username },
-      panelClass: 'bw-dialog',
-    });
-  }
 
   onBayar(fw: FriendWithBalance) {
     const debt = this.owedDebts.find(d => d.ownerId === fw.friend.id);
