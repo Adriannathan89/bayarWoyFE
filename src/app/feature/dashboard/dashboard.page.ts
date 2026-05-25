@@ -25,7 +25,6 @@ import { DashboardMobileComponent } from './component/dashboard-mobile.component
       [formatDate]="formatDate"
       [goToTransactions]="goToTransactions"
       [goToAdd]="goToAdd"
-      [goToAddType]="goToAddType"
       [goToFriends]="goToFriends"
       [onPayDebt]="onPayDebt"
     />
@@ -38,7 +37,7 @@ import { DashboardMobileComponent } from './component/dashboard-mobile.component
       [formatRupiahShort]="formatRupiahShort"
       [formatDate]="formatDate"
       [goToTransactions]="goToTransactions"
-      [goToAddType]="goToAddType"
+      [goToAdd]="goToAdd"
       [goToFriends]="goToFriends"
     />
   `,

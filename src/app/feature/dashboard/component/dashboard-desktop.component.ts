@@ -53,7 +53,7 @@ import { DashboardTipsCardComponent } from '../ui/dashboard/dashboard-tips-card.
       <div class="flex flex-col gap-5">
 
         <app-dashboard-quick-actions-desktop
-          [goToAddType]="goToAddType"
+          [goToAdd]="goToAdd"
           [goToFriends]="goToFriends"
         />
 
@@ -81,7 +81,6 @@ export class DashboardDesktopComponent {
   @Input({ required: true }) formatDate!: (dateStr: string) => string;
   @Input({ required: true }) goToTransactions!: () => void;
   @Input({ required: true }) goToAdd!: () => void;
-  @Input({ required: true }) goToAddType!: (type: string) => void;
   @Input({ required: true }) goToFriends!: () => void;
   @Input({ required: true }) onPayDebt!: (id: string) => void;
 }

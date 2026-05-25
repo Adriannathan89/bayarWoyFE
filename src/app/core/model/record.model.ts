@@ -3,6 +3,7 @@ export type Record = {
   title: string;
   description: string;
   amount: number;
+  category: string;
   type: string;
   createdAt: string;
 }

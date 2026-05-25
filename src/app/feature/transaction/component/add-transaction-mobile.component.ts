@@ -1,22 +1,10 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserRecordsService } from '../../../core/service/user/user-records.service';
 import { AddTransactionMobilePhase1Component } from '../ui/add-transaction/add-transaction-mobile-phase1.component';
 import { AddTransactionMobilePhase2Component } from '../ui/add-transaction/add-transaction-mobile-phase2.component';
-
-type TxType = 'expense' | 'income' | 'debt';
-
-const CATEGORIES = [
-  { id: 'makanan',   label: 'Makanan',   icon: 'utensils' },
-  { id: 'minum',     label: 'Minum',     icon: 'coffee' },
-  { id: 'transport', label: 'Transport', icon: 'car' },
-  { id: 'belanja',   label: 'Belanja',   icon: 'bag' },
-  { id: 'hiburan',   label: 'Hiburan',   icon: 'film' },
-  { id: 'hadiah',    label: 'Hadiah',    icon: 'gift' },
-  { id: 'lainnya',   label: 'Lainnya',   icon: 'flag' },
-];
 
 @Component({
   selector: 'app-add-transaction-mobile',
@@ -28,29 +16,23 @@ const CATEGORIES = [
   template: `
     <div class="flex flex-col h-full">
 
-      <!-- ─ Phase 1: Type + Amount + Numpad ─ -->
+      <!-- ─ Phase 1: Amount + Numpad ─ -->
       @if (phase === 1) {
         <app-add-transaction-mobile-phase1
-          [txTypes]="txTypes"
-          [selectedType]="selectedType()"
           [formattedAmount]="formattedAmount()"
-          [onSelectType]="selectType"
           [onPressNum]="pressNum"
           [onNext]="goToPhase2"
+          [onDebt]="goToFriends"
         />
       }
 
       <!-- ─ Phase 2: Details ─ -->
       @if (phase === 2) {
         <app-add-transaction-mobile-phase2
-          [typeLabel]="typeLabel()"
           [formattedAmount]="formattedAmount()"
           [form]="form"
-          [categories]="categories"
-          [selectedCategory]="selectedCategory()"
           [saving]="saving()"
           [onEditAmount]="backToPhase1"
-          [onSelectCategory]="selectCategory"
           [onSubmit]="submit"
           [onCancel]="goBack"
         />
@@ -58,24 +40,14 @@ const CATEGORIES = [
     </div>
   `,
 })
-export class AddTransactionMobileSubPage implements OnInit {
+export class AddTransactionMobileSubPage {
   private fb = inject(FormBuilder);
   private router = inject(Router);
-  private route = inject(ActivatedRoute);
   private recordsService = inject(UserRecordsService);
   private snackBar = inject(MatSnackBar);
 
-  readonly txTypes = [
-    { id: 'income'  as TxType, label: 'Pemasukan',   accent: 'var(--bw-green)',  softAccent: 'var(--bw-green-soft)' },
-    { id: 'expense' as TxType, label: 'Pengeluaran', accent: 'var(--bw-red)',    softAccent: 'var(--bw-red-soft)' },
-    { id: 'debt'    as TxType, label: 'Hutang',      accent: 'var(--bw-amber)',  softAccent: 'var(--bw-amber-soft)' },
-  ];
-  readonly categories = CATEGORIES;
-
   phase = 1;
-  selectedType = signal<TxType>('income');
   rawAmount = signal(0);
-  selectedCategory = signal('lainnya');
   saving = signal(false);
 
   form = this.fb.group({
@@ -84,20 +56,9 @@ export class AddTransactionMobileSubPage implements OnInit {
     date: [this.todayDate()],
   });
 
-  ngOnInit() {
-    const type = this.route.snapshot.queryParamMap.get('type') as TxType | null;
-    if (type && ['income', 'expense', 'debt'].includes(type)) {
-      this.selectedType.set(type);
-    }
-  }
-
   formattedAmount(): string {
     const v = this.rawAmount();
     return v === 0 ? '0' : new Intl.NumberFormat('id-ID').format(v);
-  }
-
-  typeLabel(): string {
-    return this.txTypes.find(t => t.id === this.selectedType())?.label ?? '';
   }
 
   pressNum = (key: string) => {
@@ -127,18 +88,10 @@ export class AddTransactionMobileSubPage implements OnInit {
     }
     this.saving.set(true);
     try {
-      const description = [
-        this.selectedCategory() !== 'lainnya'
-          ? this.categories.find(c => c.id === this.selectedCategory())?.label
-          : '',
-        this.form.controls.description.value,
-      ].filter(Boolean).join(' · ');
-
       await this.recordsService.createRecord(
         this.form.controls.title.value!.trim(),
-        description,
+        this.form.controls.description.value ?? '',
         this.rawAmount(),
-        this.selectedType(),
         this.form.controls.date.value!,
       );
       this.snackBar.open('Transaksi tersimpan!', 'Tutup', { duration: 2500 });
@@ -150,11 +103,9 @@ export class AddTransactionMobileSubPage implements OnInit {
     }
   };
 
-  goBack() { this.router.navigate(['/transaction']); }
-
+  goBack = () => this.router.navigate(['/transaction']);
+  goToFriends = () => this.router.navigate(['/friends']);
   backToPhase1 = () => { this.phase = 1; };
-  selectType = (type: TxType) => this.selectedType.set(type);
-  selectCategory = (id: string) => this.selectedCategory.set(id);
 
   private todayDate(): string {
     const d = new Date();

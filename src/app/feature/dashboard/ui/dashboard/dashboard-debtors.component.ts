@@ -20,7 +20,18 @@ import { Debt } from '../../../../core/model/debt.model';
             </span>
             <div class="flex-1 min-w-0">
               <div class="text-[14px] font-semibold text-bw-ink truncate">{{ d.debtor.username }}</div>
-              <div class="text-[12px] text-bw-ink-3">{{ d.description }}</div>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                @if (d.category) {
+                  <span class="text-[9px] font-semibold px-1.5 py-[2px] rounded-full"
+                        [style.background]="catBg(d.category)"
+                        [style.color]="catColor(d.category)">
+                    {{ d.category }}
+                  </span>
+                }
+                @if (d.description) {
+                  <span class="text-[12px] text-bw-ink-3 truncate">{{ d.description }}</span>
+                }
+              </div>
             </div>
             <div class="text-right shrink-0">
               <div class="mono text-[13px] font-bold text-bw-ink">Rp {{ formatRupiah(d.amount) }}</div>
@@ -41,4 +52,17 @@ export class DashboardDebtorsComponent {
   @Input({ required: true }) debts: Debt[] = [];
   @Input({ required: true }) formatRupiah!: (n: number) => string;
   @Output() pay = new EventEmitter<string>();
+
+  private readonly _cat: { [k: string]: [string, string] } = {
+    makanan:   ['var(--bw-amber-soft)',   'var(--bw-amber)'],
+    minuman:   ['var(--bw-emerald-soft)', 'var(--bw-emerald)'],
+    transport: ['rgba(132,204,22,0.12)',  'var(--bw-lime)'],
+    belanja:   ['var(--bw-red-soft)',     'var(--bw-red)'],
+    hiburan:   ['rgba(168,85,247,0.12)',  '#a855f7'],
+    tagihan:   ['var(--bw-sunken)',       'var(--bw-ink-3)'],
+    kesehatan: ['var(--bw-green-soft)',   'var(--bw-green)'],
+  };
+
+  catBg    = (c: string) => (this._cat[c] ?? ['var(--bw-sunken)', 'var(--bw-ink-3)'])[0];
+  catColor = (c: string) => (this._cat[c] ?? ['var(--bw-sunken)', 'var(--bw-ink-3)'])[1];
 }

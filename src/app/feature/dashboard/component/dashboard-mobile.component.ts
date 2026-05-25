@@ -26,11 +26,11 @@ import { DashboardRecentTransactionsMobileComponent } from '../ui/dashboard/dash
 
       <app-dashboard-stat-strip-mobile
         [records]="records"
-        [formatRupiahShort]="formatRupiahShort"
+        [formatRupiah]="formatRupiah"
       />
 
       <app-dashboard-quick-actions-mobile
-        [goToAddType]="goToAddType"
+        [goToAdd]="goToAdd"
         [goToFriends]="goToFriends"
       />
 
@@ -53,6 +53,6 @@ export class DashboardMobileComponent {
   @Input({ required: true }) formatRupiahShort!: (n: number) => string;
   @Input({ required: true }) formatDate!: (dateStr: string) => string;
   @Input({ required: true }) goToTransactions!: () => void;
-  @Input({ required: true }) goToAddType!: (type: string) => void;
+  @Input({ required: true }) goToAdd!: () => void;
   @Input({ required: true }) goToFriends!: () => void;
 }
