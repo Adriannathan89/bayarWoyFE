@@ -19,11 +19,20 @@ import { LucideCheck } from '@lucide/angular';
           {{ saving ? 'Menyimpan…' : 'Simpan transaksi' }}
         </button>
       </div>
-      <p class="text-[12px] text-bw-ink-3 text-center">
-        💡 Tip: tekan
-        <kbd class="px-1.5 py-0.5 rounded-[4px] bg-bw-sunken font-mono text-[11px]">⌘ + Enter</kbd>
-        untuk simpan cepat
-      </p>
+      <div class="flex items-center justify-center gap-3 flex-wrap mt-1">
+        <span class="text-[11px] text-bw-ink-4 flex items-center gap-1">
+          <kbd class="px-1.5 py-0.5 rounded-[4px] bg-bw-sunken font-mono text-[10px]">0–9</kbd> nominal
+        </span>
+        <span class="text-[11px] text-bw-ink-4 flex items-center gap-1">
+          <kbd class="px-1.5 py-0.5 rounded-[4px] bg-bw-sunken font-mono text-[10px]">← →</kbd> tipe
+        </span>
+        <span class="text-[11px] text-bw-ink-4 flex items-center gap-1">
+          <kbd class="px-1.5 py-0.5 rounded-[4px] bg-bw-sunken font-mono text-[10px]">⌘ Enter</kbd> simpan
+        </span>
+        <span class="text-[11px] text-bw-ink-4 flex items-center gap-1">
+          <kbd class="px-1.5 py-0.5 rounded-[4px] bg-bw-sunken font-mono text-[10px]">Esc</kbd> batal
+        </span>
+      </div>
     </div>
   `,
 })

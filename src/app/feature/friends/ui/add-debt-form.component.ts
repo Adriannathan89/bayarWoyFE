@@ -1,6 +1,5 @@
 import { Component, Input, signal, computed, HostListener } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { LucideArrowDown, LucideArrowUp, LucideUtensils, LucideCoffee, LucideCar, LucideShoppingBag, LucideFilm, LucideFlag, LucideZap } from '@lucide/angular';
+import { LucideArrowDown, LucideArrowUp, LucideZap } from '@lucide/angular';
 
 type Direction = 'receivable' | 'debt';
 
@@ -13,30 +12,10 @@ const QUICK_AMOUNTS = [
   { label: '+500rb', value: 500_000 },
 ];
 
-const CATEGORIES = [
-  { id: 'food', label: 'Makanan', icon: 'utensils' },
-  { id: 'coffee', label: 'Minum', icon: 'coffee' },
-  { id: 'car', label: 'Transport', icon: 'car' },
-  { id: 'bag', label: 'Belanja', icon: 'bag' },
-  { id: 'film', label: 'Hiburan', icon: 'film' },
-  { id: 'flag', label: 'Lainnya', icon: 'flag' },
-];
-
 @Component({
   selector: 'app-add-debt-form',
   standalone: true,
-  imports: [
-    CommonModule,
-    LucideArrowDown,
-    LucideArrowUp,
-    LucideUtensils,
-    LucideCoffee,
-    LucideCar,
-    LucideShoppingBag,
-    LucideFilm,
-    LucideFlag,
-    LucideZap,
-  ],
+  imports: [LucideArrowDown, LucideArrowUp, LucideZap],
   styles: [`
     .direction-toggle {
       display: inline-flex;
@@ -173,43 +152,6 @@ const CATEGORIES = [
       color: var(--bw-ink-3);
     }
 
-    .category-date-grid {
-      display: grid;
-      grid-template-columns: 1fr 180px;
-      gap: 14px;
-      margin-top: 14px;
-    }
-
-    .category-chips {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .cat-chip {
-      padding: 8px 10px;
-      border: none;
-      background: var(--bw-elevated);
-      color: var(--bw-ink-2);
-      font-size: 12px;
-      font-weight: 600;
-      border-radius: 12px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .cat-chip.active {
-      background: var(--bw-ink);
-      color: var(--bw-emerald);
-    }
-
-    .cat-chip:hover:not(.active) {
-      background: var(--bw-sunken);
-    }
-
     .preview-card {
       background: var(--bw-emerald-soft);
       border-radius: 12px;
@@ -244,10 +186,6 @@ const CATEGORIES = [
     }
 
     @media (max-width: 767px) {
-      .category-date-grid {
-        grid-template-columns: 1fr;
-      }
-
       .amount-display {
         font-size: 38px;
       }
@@ -275,18 +213,12 @@ const CATEGORIES = [
     <div class="form-content">
       <!-- Direction toggle -->
       <div class="direction-toggle">
-        <button
-          type="button"
-          class="direction-btn"
-          [class.active]="direction() === 'receivable'"
+        <button type="button" class="direction-btn" [class.active]="direction() === 'receivable'"
           (click)="setDirection('receivable')">
           <svg lucideArrowDown class="w-3.5 h-3.5"></svg>
           Dia hutang ke aku
         </button>
-        <button
-          type="button"
-          class="direction-btn"
-          [class.active]="direction() === 'debt'"
+        <button type="button" class="direction-btn" [class.active]="direction() === 'debt'"
           (click)="setDirection('debt')">
           <svg lucideArrowUp class="w-3.5 h-3.5"></svg>
           Aku hutang ke dia
@@ -301,73 +233,25 @@ const CATEGORIES = [
         </div>
         <div class="quick-chips">
           @for (q of quickAmounts; track q.value) {
-            <button type="button" class="quick-chip" (click)="addAmount(q.value)">
-              {{ q.label }}
-            </button>
+            <button type="button" class="quick-chip" (click)="addAmount(q.value)">{{ q.label }}</button>
           }
-          <button type="button" class="quick-chip quick-chip-clear" (click)="clearAmount()">
-            Hapus
-          </button>
+          <button type="button" class="quick-chip quick-chip-clear" (click)="clearAmount()">Hapus</button>
         </div>
       </div>
 
       <!-- Description -->
       <div class="form-field">
         <label class="form-label">Deskripsi</label>
-        <input
-          type="text"
-          class="form-input"
-          placeholder="Misal: Makan malam bersama"
+        <input type="text" class="form-input" placeholder="Misal: Makan malam bersama"
           [value]="description()"
           (input)="onDescriptionChange($event)">
       </div>
 
-      <!-- Category + Date -->
-      <div class="category-date-grid">
-        <div class="form-field" style="margin-bottom: 0;">
-          <label class="form-label">Kategori</label>
-          <div class="category-chips">
-            @for (cat of categories; track cat.id) {
-              <button
-                type="button"
-                class="cat-chip"
-                [class.active]="category() === cat.id"
-                (click)="setCategory(cat.id)">
-                @switch (cat.icon) {
-                  @case ('utensils') {
-                    <svg lucideUtensils class="w-3 h-3"></svg>
-                  }
-                  @case ('coffee') {
-                    <svg lucideCoffee class="w-3 h-3"></svg>
-                  }
-                  @case ('car') {
-                    <svg lucideCar class="w-3 h-3"></svg>
-                  }
-                  @case ('bag') {
-                    <svg lucideShoppingBag class="w-3 h-3"></svg>
-                  }
-                  @case ('film') {
-                    <svg lucideFilm class="w-3 h-3"></svg>
-                  }
-                  @case ('flag') {
-                    <svg lucideFlag class="w-3 h-3"></svg>
-                  }
-                }
-                {{ cat.label }}
-              </button>
-            }
-          </div>
-        </div>
-
-        <div class="form-field" style="margin-bottom: 0;">
-          <label class="form-label">Tanggal</label>
-          <input
-            type="date"
-            class="form-input"
-            [value]="date()"
-            (input)="onDateChange($event)"
-            style="font-size: 14px;">
-        </div>
+      <!-- Date -->
+      <div class="form-field">
+        <label class="form-label">Tanggal</label>
+        <input type="date" class="form-input" [value]="date()" (input)="onDateChange($event)"
+          style="font-size: 14px;">
       </div>
 
       <!-- Live preview -->
@@ -386,12 +270,10 @@ export class AddDebtFormComponent {
   @Input() friendName = '';
 
   readonly quickAmounts = QUICK_AMOUNTS;
-  readonly categories = CATEGORIES;
 
   direction = signal<Direction>('receivable');
   amount = signal(0);
   description = signal('');
-  category = signal('food');
   date = signal(this.todayISO());
 
   formattedAmount = computed(() => {
@@ -403,7 +285,6 @@ export class AddDebtFormComponent {
     const dir = this.direction();
     const name = this.friendName;
     const nominal = this.formattedAmount();
-
     if (dir === 'receivable') {
       return `Setelah disimpan, <strong>${name}</strong> akan hutang ke kamu <strong>Rp ${nominal}</strong>`;
     } else {
@@ -411,66 +292,37 @@ export class AddDebtFormComponent {
     }
   });
 
-  setDirection(dir: Direction) {
-    this.direction.set(dir);
-  }
-
-  addAmount(value: number) {
-    this.amount.update(v => Math.min(v + value, 999_999_999));
-  }
-
-  clearAmount() {
-    this.amount.set(0);
-  }
+  setDirection(dir: Direction) { this.direction.set(dir); }
+  addAmount(value: number) { this.amount.update(v => Math.min(v + value, 999_999_999)); }
+  clearAmount() { this.amount.set(0); }
 
   onDescriptionChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.description.set(input.value);
+    this.description.set((event.target as HTMLInputElement).value);
   }
 
   onDateChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.date.set(input.value);
-  }
-
-  setCategory(id: string) {
-    this.category.set(id);
+    this.date.set((event.target as HTMLInputElement).value);
   }
 
   @HostListener('document:keydown', ['$event'])
   onGlobalKeyDown(event: KeyboardEvent) {
     const target = event.target as HTMLElement | null;
-    const inTextField =
-      target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement;
-
+    const inTextField = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement;
     if (event.ctrlKey || event.metaKey || event.altKey) return;
-
     if (inTextField) return;
 
     if (event.key >= '0' && event.key <= '9') {
-      const digit = parseInt(event.key, 10);
-      this.amount.update(v => Math.min(v * 10 + digit, 999_999_999));
+      this.amount.update(v => Math.min(v * 10 + parseInt(event.key, 10), 999_999_999));
       event.preventDefault();
       return;
     }
-
     if (event.key === 'Backspace') {
       this.amount.update(v => Math.floor(v / 10));
       event.preventDefault();
       return;
     }
-
-    if (event.key === 'ArrowRight') {
-      this.setDirection('debt');
-      event.preventDefault();
-      return;
-    }
-
-    if (event.key === 'ArrowLeft') {
-      this.setDirection('receivable');
-      event.preventDefault();
-      return;
-    }
+    if (event.key === 'ArrowRight') { this.setDirection('debt'); event.preventDefault(); return; }
+    if (event.key === 'ArrowLeft')  { this.setDirection('receivable'); event.preventDefault(); return; }
   }
 
   private todayISO(): string {

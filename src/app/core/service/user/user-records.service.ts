@@ -4,8 +4,8 @@ import { Record, UserRecord } from "@/core/model/record.model";
 
 @Injectable({ providedIn: 'root' })
 export class UserRecordsService {
-  async createRecord(title: string, description: string, amount: number, type: string, date: string) {
-    await axiosInstance.post('/user/record', { title, description, amount, type, date });
+  async createRecord(title: string, description: string, amount: number, date: string) {
+    await axiosInstance.post('/user/record', { title, description, amount, date });
     return true;
   }
 
@@ -15,6 +15,7 @@ export class UserRecordsService {
       title: data.title,
       description: data.description,
       amount: data.amount,
+      category: data.category ?? '',
       type: data.type,
       createdAt: data.createdAt ?? data.created_at ?? ''
     };

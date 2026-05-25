@@ -1,14 +1,12 @@
-﻿import { Component, OnInit, signal, inject, HostListener } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, signal, inject, HostListener } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserRecordsService } from '../../../core/service/user/user-records.service';
-import { AddTransactionTypePickerDesktopComponent } from '../ui/add-transaction/add-transaction-type-picker-desktop.component';
 import { AddTransactionAmountHeroComponent } from '../ui/add-transaction/add-transaction-amount-hero.component';
 import { AddTransactionDetailsFormComponent } from '../ui/add-transaction/add-transaction-details-form.component';
 import { AddTransactionActionsDesktopComponent } from '../ui/add-transaction/add-transaction-actions-desktop.component';
-
-type TxType = 'expense' | 'income' | 'debt';
+import { LucideUsers } from '@lucide/angular';
 
 const QUICK_AMOUNTS = [
   { label: '10rb',  value: 10_000 },
@@ -19,48 +17,43 @@ const QUICK_AMOUNTS = [
   { label: '500rb', value: 500_000 },
 ];
 
-const CATEGORIES = [
-  { id: 'makanan',   label: 'Makanan',   icon: 'utensils' },
-  { id: 'minum',     label: 'Minum',     icon: 'coffee' },
-  { id: 'transport', label: 'Transport', icon: 'car' },
-  { id: 'belanja',   label: 'Belanja',   icon: 'bag' },
-  { id: 'hiburan',   label: 'Hiburan',   icon: 'film' },
-  { id: 'hadiah',    label: 'Hadiah',    icon: 'gift' },
-  { id: 'lainnya',   label: 'Lainnya',   icon: 'flag' },
-];
-
 @Component({
   selector: 'app-add-transaction-desktop',
   standalone: true,
   imports: [
-    AddTransactionTypePickerDesktopComponent,
     AddTransactionAmountHeroComponent,
     AddTransactionDetailsFormComponent,
     AddTransactionActionsDesktopComponent,
+    LucideUsers,
   ],
   template: `
     <div class="flex justify-center px-8 py-8">
       <div class="w-full max-w-[720px] flex flex-col gap-4 animate-fade-slide-up">
 
-        <app-add-transaction-type-picker-desktop
-          [txTypes]="txTypes"
-          [selectedType]="selectedType()"
-          [onSelectType]="selectType"
-        />
+        <!-- Hutang toggle -->
+        <button type="button" (click)="goToFriends()"
+          class="flex items-center gap-3 px-4 py-3 rounded-[12px] border transition cursor-pointer"
+          [style.background]="'var(--bw-amber-soft)'"
+          [style.borderColor]="'var(--bw-amber)'">
+          <div class="w-8 h-8 rounded-[8px] flex items-center justify-center shrink-0"
+               style="background:var(--bw-amber);color:#fff">
+            <svg lucideUsers class="w-4 h-4" style="stroke-width:2.2"></svg>
+          </div>
+          <div class="text-left">
+            <div class="text-[13px] font-bold" style="color:var(--bw-amber-ink)">Catat sebagai hutang/piutang?</div>
+            <div class="text-[11px]" style="color:var(--bw-amber-ink);opacity:0.7">Klik di sini → pilih teman dulu</div>
+          </div>
+        </button>
 
         <app-add-transaction-amount-hero
           [formattedAmount]="formattedAmount()"
           [rawAmount]="rawAmount()"
           [quickAmounts]="quickAmounts"
-          [onAmountInput]="handleAmountInput"
           [onQuickSelect]="setRawAmount"
         />
 
         <app-add-transaction-details-form
           [form]="form"
-          [categories]="categories"
-          [selectedCategory]="selectedCategory()"
-          [onSelectCategory]="selectCategory"
         />
 
         <app-add-transaction-actions-desktop
@@ -73,24 +66,15 @@ const CATEGORIES = [
     </div>
   `,
 })
-export class AddTransactionDesktopSubPage implements OnInit {
+export class AddTransactionDesktopSubPage {
   private fb = inject(FormBuilder);
   private router = inject(Router);
-  private route = inject(ActivatedRoute);
   private recordsService = inject(UserRecordsService);
   private snackBar = inject(MatSnackBar);
 
-  readonly txTypes = [
-    { id: 'income'  as TxType, label: 'Pemasukan',      accent: 'var(--bw-green)',  softAccent: 'var(--bw-green-soft)' },
-    { id: 'expense' as TxType, label: 'Pengeluaran',    accent: 'var(--bw-red)',    softAccent: 'var(--bw-red-soft)' },
-    { id: 'debt'    as TxType, label: 'Hutang/Piutang', accent: 'var(--bw-amber)',  softAccent: 'var(--bw-amber-soft)' },
-  ];
   readonly quickAmounts = QUICK_AMOUNTS;
-  readonly categories = CATEGORIES;
 
-  selectedType = signal<TxType>('income');
   rawAmount = signal(0);
-  selectedCategory = signal('lainnya');
   saving = signal(false);
 
   form = this.fb.group({
@@ -99,28 +83,33 @@ export class AddTransactionDesktopSubPage implements OnInit {
     date: [this.todayISO()],
   });
 
-  ngOnInit() {
-    const type = this.route.snapshot.queryParamMap.get('type') as TxType | null;
-    if (type && ['income', 'expense', 'debt'].includes(type)) {
-      this.selectedType.set(type);
-    }
-  }
-
   formattedAmount(): string {
     const v = this.rawAmount();
     return v === 0 ? '0' : new Intl.NumberFormat('id-ID').format(v);
   }
 
-  handleAmountInput = (e: Event) => {
-    const raw = (e.target as HTMLInputElement).value.replace(/\D/g, '');
-    this.rawAmount.set(raw ? Math.min(Number(raw), 999_999_999) : 0);
-  };
-
   @HostListener('window:keydown', ['$event'])
   onGlobalKey(e: KeyboardEvent) {
+    const target = e.target as HTMLElement | null;
+    const inTextField = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement;
+
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       e.preventDefault();
       this.handleSubmit(false);
+      return;
+    }
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      this.router.navigate(['/transaction']);
+      return;
+    }
+    if (inTextField || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.key >= '0' && e.key <= '9') {
+      this.rawAmount.update(v => Math.min(v * 10 + parseInt(e.key, 10), 999_999_999));
+      e.preventDefault();
+    } else if (e.key === 'Backspace') {
+      this.rawAmount.update(v => Math.floor(v / 10));
+      e.preventDefault();
     }
   }
 
@@ -135,25 +124,16 @@ export class AddTransactionDesktopSubPage implements OnInit {
     }
     this.saving.set(true);
     try {
-      const description = [
-        this.selectedCategory() !== 'lainnya'
-          ? this.categories.find(c => c.id === this.selectedCategory())?.label
-          : '',
-        this.form.controls.description.value,
-      ].filter(Boolean).join(' · ');
-
       await this.recordsService.createRecord(
         this.form.controls.title.value!.trim(),
-        description,
+        this.form.controls.description.value ?? '',
         this.rawAmount(),
-        this.selectedType(),
         this.form.controls.date.value!,
       );
       this.snackBar.open('Transaksi tersimpan!', 'Tutup', { duration: 2500 });
       if (andAgain) {
         this.form.reset({ title: '', description: '', date: this.todayISO() });
         this.rawAmount.set(0);
-        this.selectedCategory.set('lainnya');
       } else {
         this.router.navigate(['/transaction']);
       }
@@ -164,8 +144,7 @@ export class AddTransactionDesktopSubPage implements OnInit {
     }
   }
 
-  selectType = (type: TxType) => this.selectedType.set(type);
-  selectCategory = (id: string) => this.selectedCategory.set(id);
+  goToFriends = () => this.router.navigate(['/friends']);
   setRawAmount = (value: number) => this.rawAmount.set(value);
   submitAndAgain = () => this.handleSubmit(true);
   submitOnce = () => this.handleSubmit(false);

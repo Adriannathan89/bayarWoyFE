@@ -1,27 +1,13 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { LucideDelete } from '@lucide/angular';
-import { AddTransactionTypePickerMobileComponent } from './add-transaction-type-picker-mobile.component';
-
-type TxType = 'expense' | 'income' | 'debt';
+import { LucideDelete, LucideUsers } from '@lucide/angular';
 
 @Component({
   selector: 'app-add-transaction-mobile-phase1',
   standalone: true,
-  imports: [
-    CommonModule,
-    AddTransactionTypePickerMobileComponent,
-    LucideDelete,
-  ],
+  imports: [LucideDelete, LucideUsers],
   styleUrls: ['./add-transaction.styles.css'],
   template: `
     <div class="flex flex-col gap-4 px-5 pt-3 pb-4 animate-fade-in">
-
-      <app-add-transaction-type-picker-mobile
-        [txTypes]="txTypes"
-        [selectedType]="selectedType"
-        [onSelectType]="onSelectType"
-      />
 
       <div class="text-center py-4">
         <div class="text-[11px] font-semibold uppercase tracking-[0.1em] text-bw-ink-3 mb-2">Jumlah</div>
@@ -46,16 +32,21 @@ type TxType = 'expense' | 'income' | 'debt';
         Lanjutkan →
       </button>
 
+      <button type="button" (click)="onDebt()"
+        class="mx-2 flex items-center justify-center gap-2 py-3 rounded-[12px] border cursor-pointer transition"
+        style="background:var(--bw-amber-soft);border-color:var(--bw-amber);color:var(--bw-amber-ink)">
+        <svg lucideUsers class="w-4 h-4" style="stroke-width:2.2"></svg>
+        <span class="text-[13px] font-semibold">Catat sebagai hutang/piutang</span>
+      </button>
+
     </div>
   `,
 })
 export class AddTransactionMobilePhase1Component {
-  @Input() txTypes: { id: TxType; label: string; accent: string; softAccent: string }[] = [];
-  @Input() selectedType: TxType = 'income';
   @Input() formattedAmount = '0';
-  @Input() onSelectType: (type: TxType) => void = () => {};
   @Input() onPressNum: (key: string) => void = () => {};
   @Input() onNext: () => void = () => {};
+  @Input() onDebt: () => void = () => {};
 
   readonly numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 }

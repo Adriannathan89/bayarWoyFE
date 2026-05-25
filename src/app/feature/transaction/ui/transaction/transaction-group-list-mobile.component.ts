@@ -37,7 +37,16 @@ interface TxGroup {
             </div>
             <div class="flex-1 min-w-0">
               <div class="text-[13px] font-semibold text-bw-ink truncate">{{ tx.title }}</div>
-              <div class="text-[11px] text-bw-ink-3 mt-0.5">{{ formatTime(tx.createdAt) }}</div>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                @if (tx.category) {
+                  <span class="text-[9px] font-semibold px-1.5 py-[2px] rounded-full"
+                        [style.background]="categoryBg(tx.category)"
+                        [style.color]="categoryColor(tx.category)">
+                    {{ tx.category }}
+                  </span>
+                }
+                <span class="text-[11px] text-bw-ink-3">{{ formatTime(tx.createdAt) }}</span>
+              </div>
             </div>
             <div class="mono text-[13px] font-bold shrink-0"
                  [style.color]="tx.type === 'expense' ? 'var(--bw-red)' : 'var(--bw-green)'">
@@ -56,4 +65,17 @@ export class TransactionGroupListMobileComponent {
   @Input() formatTime!: (dateStr: string) => string;
 
   abs = (value: number) => Math.abs(value);
+
+  private readonly _catColor: { [k: string]: [string, string] } = {
+    makanan:   ['var(--bw-amber-soft)',   'var(--bw-amber)'],
+    minuman:   ['var(--bw-emerald-soft)', 'var(--bw-emerald)'],
+    transport: ['rgba(132,204,22,0.12)',  'var(--bw-lime)'],
+    belanja:   ['var(--bw-red-soft)',     'var(--bw-red)'],
+    hiburan:   ['rgba(168,85,247,0.12)',  '#a855f7'],
+    tagihan:   ['var(--bw-sunken)',       'var(--bw-ink-3)'],
+    kesehatan: ['var(--bw-green-soft)',   'var(--bw-green)'],
+  };
+
+  categoryBg    = (cat: string) => (this._catColor[cat] ?? ['var(--bw-sunken)', 'var(--bw-ink-3)'])[0];
+  categoryColor = (cat: string) => (this._catColor[cat] ?? ['var(--bw-sunken)', 'var(--bw-ink-3)'])[1];
 }

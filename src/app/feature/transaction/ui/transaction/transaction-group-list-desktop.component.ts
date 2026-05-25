@@ -37,9 +37,18 @@ interface TxGroup {
             </div>
             <div class="flex-1 min-w-0">
               <div class="text-[14px] font-semibold text-bw-ink truncate">{{ tx.title }}</div>
-              @if (tx.description) {
-                <div class="text-[12px] text-bw-ink-3 mt-0.5 truncate">{{ tx.description }}</div>
-              }
+              <div class="flex items-center gap-1.5 mt-0.5">
+                @if (tx.category) {
+                  <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                        [style.background]="categoryBg(tx.category)"
+                        [style.color]="categoryColor(tx.category)">
+                    {{ tx.category }}
+                  </span>
+                }
+                @if (tx.description) {
+                  <span class="text-[12px] text-bw-ink-3 truncate">{{ tx.description }}</span>
+                }
+              </div>
             </div>
             <span class="text-[12px] font-medium px-2.5 py-0.5 rounded-full shrink-0"
                   [style.background]="typeChipBg(tx.type)"
@@ -66,4 +75,17 @@ export class TransactionGroupListDesktopComponent {
   @Input() typeChipColor!: (type: string) => string;
 
   abs = (value: number) => Math.abs(value);
+
+  private readonly _catColor: { [k: string]: [string, string] } = {
+    makanan:   ['var(--bw-amber-soft)',   'var(--bw-amber)'],
+    minuman:   ['var(--bw-emerald-soft)', 'var(--bw-emerald)'],
+    transport: ['rgba(132,204,22,0.12)',  'var(--bw-lime)'],
+    belanja:   ['var(--bw-red-soft)',     'var(--bw-red)'],
+    hiburan:   ['rgba(168,85,247,0.12)',  '#a855f7'],
+    tagihan:   ['var(--bw-sunken)',       'var(--bw-ink-3)'],
+    kesehatan: ['var(--bw-green-soft)',   'var(--bw-green)'],
+  };
+
+  categoryBg    = (cat: string) => (this._catColor[cat] ?? ['var(--bw-sunken)', 'var(--bw-ink-3)'])[0];
+  categoryColor = (cat: string) => (this._catColor[cat] ?? ['var(--bw-sunken)', 'var(--bw-ink-3)'])[1];
 }

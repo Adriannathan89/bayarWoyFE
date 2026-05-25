@@ -224,21 +224,34 @@ export class TransactionPage implements OnInit {
 
   totalTxCount = computed(() => this.flatTx().length);
 
+  readonly categoryColorMap: { [key: string]: string } = {
+    makanan: 'var(--bw-amber)',
+    minuman: 'var(--bw-emerald)',
+    transport: 'var(--bw-lime)',
+    belanja: 'var(--bw-red)',
+    hiburan: '#a855f7',
+    tagihan: 'var(--bw-ink-3)',
+    kesehatan: 'var(--bw-green)',
+    lainnya: 'var(--bw-ink-4)',
+  };
+
   categoryBreakdown = computed(() => {
     const expenses = this.allRecords()?.expenses ?? [];
     const total = expenses.reduce((s, t) => s + t.amount, 0);
     if (total === 0) return [];
     const cats: { [key: string]: number } = {};
     for (const t of expenses) {
-      const k = t.description || 'Lainnya';
+      const k = t.category || 'lainnya';
       cats[k] = (cats[k] ?? 0) + t.amount;
     }
-    const sorted = Object.entries(cats)
-      .map(([label, amt]) => ({ label, pct: (amt / total) * 100 }))
+    return Object.entries(cats)
+      .map(([label, amt]) => ({
+        label,
+        pct: (amt / total) * 100,
+        color: this.categoryColorMap[label] ?? 'var(--bw-ink-3)',
+      }))
       .sort((a, b) => b.pct - a.pct)
       .slice(0, 5);
-    const colors = ['var(--bw-ink)', 'var(--bw-amber)', 'var(--bw-red)', 'var(--bw-lime)', 'var(--bw-ink-3)'];
-    return sorted.map((s, i) => ({ ...s, color: colors[i] }));
   });
 
   topCategory = computed(() => this.categoryBreakdown()[0]?.label ?? 'Lainnya');
