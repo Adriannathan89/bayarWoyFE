@@ -57,7 +57,7 @@ export class DashboardPage implements OnInit {
   async ngOnInit() {
     try {
       const [recordData, debtData] = await Promise.all([
-        this.recordsService.getRecords(),
+        this.recordsService.getCommittedRecords(),
         this.debtService.loadAllDebts(),
       ]);
       this.records.set(recordData);

@@ -1,6 +1,8 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { UserRecordsService } from '../../../core/service/user/user-records.service';
 import { Record, UserRecord } from '../../../core/model/record.model';
 import { TransactionSearchComponent } from '../ui/transaction/transaction-search.component';
@@ -11,6 +13,8 @@ import { TransactionGroupListMobileComponent } from '../ui/transaction/transacti
 import { TransactionMonthlySummaryComponent } from '../ui/transaction/transaction-monthly-summary.component';
 import { TransactionMobileStatsComponent } from '../ui/transaction/transaction-mobile-stats.component';
 import { TransactionPeriodFilterComponent, Period } from '../ui/transaction/transaction-period-filter.component';
+import { CommitRecordDialogComponent } from '../ui/commit/commit-record-dialog.component';
+import { CommitRecordSheetComponent } from '../ui/commit/commit-record-sheet.component';
 
 type FilterType = 'all' | 'expense' | 'income' | 'debt';
 
@@ -72,6 +76,7 @@ interface TxGroup {
             [typeLabel]="typeLabel"
             [typeChipBg]="typeChipBg"
             [typeChipColor]="typeChipColor"
+            (commitRecord)="onCommit($event)"
           />
         }
       </div>
@@ -122,6 +127,7 @@ interface TxGroup {
           [formatRupiah]="formatRupiah"
           [formatRupiahShort]="formatRupiahShort"
           [formatTime]="formatTime"
+          (commitRecord)="onCommit($event)"
         />
         @if (groups().length === 0) {
           <app-transaction-empty-state variant="text"></app-transaction-empty-state>
@@ -134,6 +140,8 @@ export class TransactionPage implements OnInit {
   private recordsService = inject(UserRecordsService);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
+  private bottomSheet = inject(MatBottomSheet);
 
   readonly Math = Math;
 
@@ -197,7 +205,9 @@ export class TransactionPage implements OnInit {
       }
       const g = map.get(key)!;
       g.items.push(tx);
-      g.total += tx.type === 'expense' ? -tx.amount : tx.amount;
+      if (tx.isCommitted) {
+        g.total += tx.type === 'expense' ? -tx.amount : tx.amount;
+      }
     }
     return Array.from(map.values());
   });
@@ -241,7 +251,8 @@ export class TransactionPage implements OnInit {
     if (total === 0) return [];
     const cats: { [key: string]: number } = {};
     for (const t of expenses) {
-      const k = t.category || 'lainnya';
+      const primaryCat = t.categories?.find(c => c.type === 'primary');
+      const k = primaryCat?.name || 'lainnya';
       cats[k] = (cats[k] ?? 0) + t.amount;
     }
     return Object.entries(cats)
@@ -255,6 +266,35 @@ export class TransactionPage implements OnInit {
   });
 
   topCategory = computed(() => this.categoryBreakdown()[0]?.label ?? 'Lainnya');
+
+  onCommit(record: Record) {
+    if (window.innerWidth < 768) {
+      const ref = this.bottomSheet.open(CommitRecordSheetComponent, {
+        data: record,
+        panelClass: 'commit-record-sheet-panel',
+      });
+      ref.afterDismissed().subscribe(result => {
+        if (result === 'committed' || result === 'deleted') this.reloadRecords();
+      });
+    } else {
+      const ref = this.dialog.open(CommitRecordDialogComponent, {
+        data: record,
+        width: '540px',
+        panelClass: 'commit-record-dialog-panel',
+      });
+      ref.afterClosed().subscribe(result => {
+        if (result === 'committed' || result === 'deleted') this.reloadRecords();
+      });
+    }
+  }
+
+  private async reloadRecords() {
+    try {
+      this.allRecords.set(await this.recordsService.getRecords());
+    } catch {
+      this.snackBar.open('Gagal memuat data.', 'Tutup', { duration: 3000 });
+    }
+  }
 
   setFilter(f: FilterType) { this.activeFilter.set(f); }
   setPeriod(p: Period) { this.activePeriod.set(p); }

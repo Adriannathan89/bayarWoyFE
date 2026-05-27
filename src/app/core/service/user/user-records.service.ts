@@ -15,17 +15,18 @@ export class UserRecordsService {
       title: data.title,
       description: data.description,
       amount: data.amount,
-      category: data.category ?? '',
+      categories: data.categories ?? [],
       type: data.type,
-      createdAt: data.createdAt ?? data.created_at ?? ''
+      createdAt: data.createdAt ?? data.created_at ?? '',
+      isCommitted: data.isCommitted ?? false,
     };
   }
 
-  async getRecords() {
+  async getRecords(): Promise<UserRecord> {
     const res = await axiosInstance.get('/user/records');
     const data = res.data.data;
     console.log(data);
-    const mappedData: UserRecord = {
+    return {
       expenses: data.expenses ? data.expenses.map((r: any) => this.mapToUserRecord(r)) : [],
       incomes: data.incomes ? data.incomes.map((r: any) => this.mapToUserRecord(r)) : [],
       debts: data.debts ? data.debts.map((r: any) => this.mapToUserRecord(r)) : [],
@@ -34,6 +35,22 @@ export class UserRecordsService {
       receivable: data.receivable,
       balance: data.balance
     };
-    return mappedData;
+  }
+
+  async getCommittedRecords(): Promise<UserRecord> {
+    const records = await this.getRecords();
+    return {
+      ...records,
+      expenses: records.expenses.filter(r => r.isCommitted),
+      incomes: records.incomes.filter(r => r.isCommitted),
+    };
+  }
+
+  async commitRecord(recordId: string, category?: string): Promise<void> {
+    await axiosInstance.put('/user/record/commit', { recordId, ...(category ? { category } : {}) });
+  }
+
+  async deleteRecord(recordId: string): Promise<void> {
+    await axiosInstance.delete(`/user/record/${recordId}`);
   }
 }

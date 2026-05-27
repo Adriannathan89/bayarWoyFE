@@ -1,11 +1,18 @@
+export type Category = {
+  id: string;
+  name: string;
+  type: 'primary' | 'secondary';
+}
+
 export type Record = {
   id: string;
   title: string;
   description: string;
   amount: number;
-  category: string;
+  categories: Category[];
   type: string;
   createdAt: string;
+  isCommitted: boolean;
 }
 
 export type UserRecord = {
