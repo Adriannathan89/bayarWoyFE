@@ -22,6 +22,18 @@ const CATEGORY_ICONS: { [key: string]: string } = {
   hadiah:    '🎁',
 };
 
+const VALID_SECONDARY_CATEGORIES: { [key: string]: string[] } = {
+  'makanan':   ['makanan', 'jajanan'],
+  'minuman':   ['minuman', 'jajanan'],
+  'transport': ['transport', 'online', 'umum', 'pesawat', 'pribadi'],
+  'belanja':   ['belanja', 'fashion', 'elektronik', 'kecantikan', 'online_shop', 'harian'],
+  'hiburan':   ['hiburan', 'streaming', 'game', 'liburan', 'tontonan', 'aktivitas'],
+  'tagihan':   ['tagihan', 'utilitas', 'internet_pulsa', 'asuransi', 'kredit', 'sewa', 'gaji_pihak3', 'iuran'],
+  'kesehatan': ['kesehatan', 'apotek', 'prosedur', 'obat', 'konsul'],
+  'gaji':      ['gaji', 'bonus', 'komisi'],
+  'hadiah':    ['hadiah', 'undian', 'reward', 'kado', 'sumbangan', 'pemberian_masuk'],
+};
+
 @Component({
   selector: 'app-commit-record-form',
   standalone: true,
@@ -223,6 +235,28 @@ const CATEGORY_ICONS: { [key: string]: string } = {
       }
     </div>
 
+    <!-- Secondary category picker (only show after primary selected) -->
+    @if (selectedCategory() && validSecondaries().length > 0) {
+      <div style="margin-top: 20px;">
+        <div class="section-label">Kategori detail</div>
+        <div class="category-grid">
+          @for (cat of validSecondaries(); track cat) {
+            <button type="button"
+                    class="cat-btn"
+                    [class.selected]="selectedSecondary() === cat"
+                    [style.background]="selectedSecondary() === cat ? getCategoryColors(cat)[0] : ''"
+                    [style.border-color]="selectedSecondary() === cat ? getCategoryColors(cat)[1] : ''"
+                    (click)="selectSecondary(cat)">
+              <span class="cat-icon">{{ catIcon(cat) }}</span>
+              <span class="cat-name" [style.color]="selectedSecondary() === cat ? getCategoryColors(cat)[1] : ''">
+                {{ cat }}
+              </span>
+            </button>
+          }
+        </div>
+      </div>
+    }
+
     <!-- SLM predicted secondary category -->
     @if (predictedSecondary()) {
       <div style="margin-top: 12px; font-size: 11px; color: var(--bw-ink-3);">
@@ -262,20 +296,63 @@ export class CommitRecordFormComponent implements OnInit {
     return secondary?.name;
   });
 
+  selectedSecondary = signal<string>('');
+
+  readonly validSecondaries = computed<string[]>(() => {
+    const primary = this.selectedCategory();
+    return primary && primary in VALID_SECONDARY_CATEGORIES
+      ? VALID_SECONDARY_CATEGORIES[primary]
+      : [];
+  });
+
   ngOnInit() {
     const primary = this.record.categories.find(c => c.type === 'primary');
     this.selectedCategory.set(primary?.name ?? '');
+
+    const secondary = this.record.categories.find(c => c.type === 'secondary');
+    this.selectedSecondary.set(secondary?.name ?? '');
   }
 
   selectCategory(cat: string) {
     this.selectedCategory.set(cat);
   }
 
-  getCategoryOrUndefined(): string | undefined {
+  // Called from secondary category picker grid in template (Task 2)
+  selectSecondary(sec: string) {
+    if (this.validSecondaries().includes(sec)) {
+      this.selectedSecondary.set(sec);
+    }
+  }
+
+  private getPrimaryInitialAndCurrent() {
     const primary = this.record.categories.find(c => c.type === 'primary');
-    const initial = primary?.name ?? '';
-    const current = this.selectedCategory();
+    return { initial: primary?.name ?? '', current: this.selectedCategory() };
+  }
+
+  getCategoryOrUndefined(): string | undefined {
+    const { initial, current } = this.getPrimaryInitialAndCurrent();
     return current !== initial ? current : undefined;
+  }
+
+  // Called by CommitRecordSheetComponent to detect changes to both primary and secondary categories
+  getCategoryOrUndefinedWithSecondary(): { category?: string; secondary?: string } | undefined {
+    const { initial: initialPrimary, current: currentPrimary } = this.getPrimaryInitialAndCurrent();
+
+    const secondary = this.record.categories.find(c => c.type === 'secondary');
+    const initialSecondary = secondary?.name ?? '';
+    const currentSecondary = this.selectedSecondary();
+
+    const categoryChanged = currentPrimary !== initialPrimary;
+    const secondaryChanged = currentSecondary !== initialSecondary;
+
+    if (!categoryChanged && !secondaryChanged) {
+      return undefined;
+    }
+
+    const result: { category?: string; secondary?: string } = {};
+    if (categoryChanged) result.category = currentPrimary;
+    if (secondaryChanged) result.secondary = currentSecondary;
+    return result;
   }
 
   getCategoryColors = getCategoryColors;

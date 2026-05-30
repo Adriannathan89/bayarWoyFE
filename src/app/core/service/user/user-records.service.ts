@@ -46,8 +46,11 @@ export class UserRecordsService {
     };
   }
 
-  async commitRecord(recordId: string, category?: string): Promise<void> {
-    await axiosInstance.put('/user/record/commit', { recordId, ...(category ? { category } : {}) });
+  async commitRecord(recordId: string, category?: string, secondaryCategory?: string): Promise<void> {
+    const payload: any = { recordId };
+    if (category) payload.category = category;
+    if (secondaryCategory) payload.secondaryCategory = secondaryCategory;
+    await axiosInstance.put('/user/record/commit', payload);
   }
 
   async deleteRecord(recordId: string): Promise<void> {

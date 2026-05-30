@@ -237,8 +237,8 @@ export class CommitRecordDialogComponent {
   async submit() {
     this.submitting.set(true);
     try {
-      const changedCategory = this.form.getCategoryOrUndefined();
-      await this.recordsService.commitRecord(this.data.id, changedCategory);
+      const changed = this.form.getCategoryOrUndefinedWithSecondary();
+      await this.recordsService.commitRecord(this.data.id, changed?.category, changed?.secondary);
       this.snackBar.open('Transaksi berhasil dikonfirmasi ✓', 'Tutup', { duration: 2500 });
       this.dialogRef.close('committed');
     } catch {

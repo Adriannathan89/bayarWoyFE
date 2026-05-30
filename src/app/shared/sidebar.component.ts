@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { LucideHouse, LucideReceipt, LucideUsers, LucideLogOut } from '@lucide/angular';
+import { LucideHouse, LucideReceipt, LucideUsers, LucideLogOut, LucideUser } from '@lucide/angular';
 import { UserAuthService } from '../core/service/user/user-auth.service';
 
 @Component({
@@ -9,7 +9,7 @@ import { UserAuthService } from '../core/service/user/user-auth.service';
   standalone: true,
   imports: [
     RouterLink, RouterLinkActive,
-    LucideHouse, LucideReceipt, LucideUsers, LucideLogOut,
+    LucideHouse, LucideReceipt, LucideUsers, LucideLogOut, LucideUser,
   ],
   styles: [`
     .nav-item { transition: background 150ms ease, color 150ms ease; }
@@ -57,6 +57,16 @@ import { UserAuthService } from '../core/service/user/user-auth.service';
           <svg lucideUsers class="w-[18px] h-[18px] shrink-0"
                [style.strokeWidth]="friends.isActive ? '2' : '1.8'"></svg>
           Teman
+        </a>
+
+        <a [routerLink]="'/profile'" routerLinkActive #profile="routerLinkActive"
+          class="nav-item flex items-center gap-3 px-3 py-[11px] rounded-[12px] text-[14px] font-semibold cursor-pointer no-underline"
+          [style.background]="profile.isActive ? 'var(--bw-ink)' : ''"
+          [style.color]="profile.isActive ? 'var(--bw-on-ink)' : 'var(--bw-ink-2)'"
+          [class.active]="profile.isActive">
+          <svg lucideUser class="w-[18px] h-[18px] shrink-0"
+               [style.strokeWidth]="profile.isActive ? '2' : '1.8'"></svg>
+          Profile
         </a>
       </nav>
 

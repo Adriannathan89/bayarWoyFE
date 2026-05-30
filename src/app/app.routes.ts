@@ -35,6 +35,10 @@ export const routes: Routes = [
                     { path: 'add', loadComponent: () => import('./feature/transaction/page/addTransaction.page').then(m => m.AddTransactionPage) },
                 ],
             },
+            {
+                path: 'profile',
+                loadComponent: () => import('./feature/profile/profile.page').then(m => m.ProfilePage),
+            },
         ],
     },
 ];

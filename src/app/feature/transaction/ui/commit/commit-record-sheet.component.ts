@@ -1,8 +1,8 @@
-import { Component, Inject, signal, inject, ViewChild, HostListener } from '@angular/core';
+import { Component, Inject, signal, inject, ViewChild, HostListener, AfterViewInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef, MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { LucideX, LucideCheck, LucideTrash2 } from '@lucide/angular';
+import { LucideCheck, LucideTrash2 } from '@lucide/angular';
 import { CommitRecordFormComponent } from './commit-record-form.component';
 import { UserRecordsService } from '../../../../core/service/user/user-records.service';
 import { Record } from '../../../../core/model/record.model';
@@ -15,7 +15,6 @@ export type CommitRecordSheetData = Record;
   imports: [
     CommonModule,
     MatBottomSheetModule,
-    LucideX,
     LucideCheck,
     LucideTrash2,
     CommitRecordFormComponent,
@@ -150,12 +149,9 @@ export type CommitRecordSheetData = Record;
           <div class="header-eyebrow">Konfirmasi transaksi</div>
           <h2 class="header-title">Tinjau & konfirmasi</h2>
         </div>
-        <button class="close-btn" (click)="bottomSheetRef.dismiss()">
-          <svg lucideX class="w-3.5 h-3.5"></svg>
-        </button>
       </div>
 
-      <div class="sheet-body">
+      <div class="sheet-body" #sheetBody (pointerdown)="onDragStart($event)" (pointermove)="onDragMove($event)" (pointerup)="onDragEnd($event)">
         <app-commit-record-form [record]="data" #formComponent />
       </div>
 
@@ -181,17 +177,35 @@ export type CommitRecordSheetData = Record;
     </div>
   `,
 })
-export class CommitRecordSheetComponent {
+export class CommitRecordSheetComponent implements AfterViewInit {
   @ViewChild('formComponent') form!: CommitRecordFormComponent;
+  @ViewChild('sheetBody') sheetBodyRef: any;
 
   private recordsService = inject(UserRecordsService);
   private snackBar = inject(MatSnackBar);
   submitting = signal(false);
 
+  dragStartY = signal(0);
+  dragCurrentY = signal(0);
+  isDragging = signal(false);
+  sheetElement: HTMLElement | null = null;
+
+  readonly dragDistance = computed(() => Math.max(0, this.dragCurrentY() - this.dragStartY()));
+  readonly dragThreshold = computed(() => {
+    if (!this.sheetElement) return 120;
+    const sheetHeight = this.sheetElement.offsetHeight;
+    return Math.min(sheetHeight * 0.4, 120);
+  });
+  readonly shouldDismiss = computed(() => this.dragDistance() > this.dragThreshold());
+
   constructor(
     public bottomSheetRef: MatBottomSheetRef<CommitRecordSheetComponent>,
     @Inject(MAT_BOTTOM_SHEET_DATA) public data: CommitRecordSheetData,
   ) {}
+
+  ngAfterViewInit() {
+    this.sheetElement = document.querySelector('.commit-record-sheet-panel mat-bottom-sheet-container') as HTMLElement;
+  }
 
   @HostListener('window:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
@@ -204,11 +218,81 @@ export class CommitRecordSheetComponent {
     }
   }
 
+  onDragStart(event: PointerEvent) {
+    if (event.pointerType !== 'touch') return;
+
+    this.dragStartY.set(event.clientY);
+    this.dragCurrentY.set(event.clientY);
+    this.isDragging.set(true);
+  }
+
+  onDragMove(event: PointerEvent) {
+    if (!this.isDragging()) return;
+
+    this.dragCurrentY.set(event.clientY);
+
+    const distance = this.dragDistance();
+    const threshold = this.dragThreshold();
+    const backdropOpacity = 1 - (distance / threshold) * 0.3;
+
+    const sheetEl = document.querySelector('.commit-record-sheet-panel mat-bottom-sheet-container') as HTMLElement;
+    if (sheetEl) {
+      sheetEl.style.transform = `translateY(${distance}px)`;
+      sheetEl.style.opacity = `${Math.max(0.7, 1 - distance / threshold * 0.15)}`;
+    }
+
+    const backdropEl = document.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+    if (backdropEl) {
+      backdropEl.style.opacity = `${backdropOpacity.toFixed(2)}`;
+    }
+  }
+
+  onDragEnd(event: PointerEvent) {
+    if (!this.isDragging()) return;
+
+    this.isDragging.set(false);
+
+    const distance = this.dragDistance();
+    const threshold = this.dragThreshold();
+
+    const sheetEl = document.querySelector('.commit-record-sheet-panel mat-bottom-sheet-container') as HTMLElement;
+    const backdropEl = document.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+
+    if (distance > threshold) {
+      if (sheetEl) {
+        sheetEl.classList.add('closing');
+      }
+      if (backdropEl) {
+        backdropEl.style.opacity = '0';
+      }
+      setTimeout(() => {
+        this.bottomSheetRef.dismiss();
+      }, 200);
+    } else {
+      if (sheetEl) {
+        sheetEl.classList.add('snapping-back');
+        sheetEl.style.transform = 'translateY(0)';
+        sheetEl.style.opacity = '1';
+      }
+      if (backdropEl) {
+        backdropEl.style.opacity = '1';
+      }
+      setTimeout(() => {
+        if (sheetEl) {
+          sheetEl.classList.remove('snapping-back');
+        }
+      }, 300);
+    }
+
+    this.dragStartY.set(0);
+    this.dragCurrentY.set(0);
+  }
+
   async submit() {
     this.submitting.set(true);
     try {
-      const changedCategory = this.form.getCategoryOrUndefined();
-      await this.recordsService.commitRecord(this.data.id, changedCategory);
+      const changed = this.form.getCategoryOrUndefinedWithSecondary();
+      await this.recordsService.commitRecord(this.data.id, changed?.category, changed?.secondary);
       this.snackBar.open('Transaksi berhasil dikonfirmasi ✓', 'Tutup', { duration: 2500 });
       this.bottomSheetRef.dismiss('committed');
     } catch {
