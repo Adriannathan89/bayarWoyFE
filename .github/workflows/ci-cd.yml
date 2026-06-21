@@ -151,8 +151,8 @@ jobs:
           envs: IMAGE_NAME,IMAGE_TAG,APP_PORT,GHCR_USER,GHCR_TOKEN
           script: |
             set -e
-            mkdir -p /root/bayarwoy-fe
-            cd /root/bayarwoy-fe
+            mkdir -p /home/server256/bayarwoy-fe
+            cd /home/server256/bayarwoy-fe
 
             echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
 
